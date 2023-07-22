@@ -1,11 +1,22 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <title><%= title %></title>
-    <link rel='stylesheet' href='/stylesheets/style.css' />
-  </head>
-  <body>
-    <h1><%= title %></h1>
-    <p>Welcome to <%= title %></p>
-  </body>
+<html lang="en">
+<head>
+    <%- include('_shared/_head', title); %>
+</head>
+<body>
+    <div class="mainGrid">
+        <header>
+            <%- include('_shared/_navigator', brand, navMenu); %>
+        </header>
+        <main>
+            <!-- Body Start here -->
+            <h3>Welcome to <%= title %></h3>
+            <!-- Body End here -->
+        </main>
+        <footer>
+            <%- include('_shared/_footer'); %>
+        </footer>
+    </div>
+    <%- include('_shared/_scripts'); %>
+</body>
 </html>

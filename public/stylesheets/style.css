@@ -1,8 +1,15 @@
 body {
-  padding: 50px;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
 }
 
 a {
   color: #00B7FF;
+}
+
+.selector-for-some-widget {
+  box-sizing: content-box;
+}
+
+main {
+  padding: 15px;
 }

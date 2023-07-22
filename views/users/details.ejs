@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('../_shared/_head', title); %>
+    <link rel="stylesheet" href="/lib/swal/sweetalert2.min.css" type="text/css" />
+</head>
+<body>
+    <div class="mainGrid">
+        <header>
+            <%- include('../_shared/_navigator', brand, navMenu); %>
+        </header>
+        <main>
+            <!-- Body Start here -->
+            <div class="detailContainer">
+                {{#with user}}
+                    <label for="Username"><b>Username</b></label>
+                    <input type="text" value="{{Username}}" readonly />
+                    <label for="Color"><b>Color</b></label>
+                    <div class="colorIcon" style="background-color: {{Color}};"></div>
+                    <hr />
+                    <a href="/users/edit/{{UserID}}">Edit</a>
+                    <button id="deleteButton" type="button" class="button redButton" onclick="deleteRecord('/users', {{UserID}}, '{{Username}}', '/users')">Delete</button>
+                    <a href="/users">Return</a>
+                {{/with}}
+            </div>
+            <!-- Body End here -->
+        </main>
+        <footer>
+            <%- include('../_shared/_footer'); %>
+        </footer>
+    </div>
+    <%- include('../_shared/_scripts'); %>
+    <script src="/lib/swal/sweetalert2.min.js" type="text/javascript"></script>
+    <script src="/javascripts/crud.js" type="text/javascript"></script>
+</body>
+</html>
+
