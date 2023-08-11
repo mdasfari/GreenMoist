@@ -1,0 +1,1 @@
+g++.exe -g .\StateMachine\Base\*.cpp .\StateMachine\States\*.cpp .\*.cpp  -o ..\Build\ActiveNode\ActiveNode.exe
