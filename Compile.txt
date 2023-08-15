@@ -1,1 +1,1 @@
-g++.exe -g .\StateMachine\Base\*.cpp .\StateMachine\States\*.cpp .\*.cpp  -o ..\Build\ActiveNode\ActiveNode.exe
+g++.exe -g .\StateMachine\*.cpp  .\StateMachine\Base\*.cpp .\StateMachine\States\*.cpp .\*.cpp -std=c++20  -o ..\Builds\ActiveNode\ActiveNode.exe

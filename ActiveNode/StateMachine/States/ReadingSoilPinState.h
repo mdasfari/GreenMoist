@@ -3,9 +3,8 @@
 class ReadingSoilPinState :
     public State
 {
-
 public:
-    ReadingSoilPinState();
+    ReadingSoilPinState(std::string stateID);
     ~ReadingSoilPinState();
     void virtual Enter();
     void virtual Exit();

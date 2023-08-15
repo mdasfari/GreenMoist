@@ -1,6 +1,5 @@
-#include <string>
-
 #pragma once
+#include <string>
 
 class State
 {
@@ -19,10 +18,11 @@ private:
 	bool _stateChanged;
 public:
 	State();
+	State(std::string stateID);
 	~State();
 	std::string getStateID();
 	int getPinNumber();
-	void setStateID(std::string value);
+	// void setStateID(std::string value);
 
 	// Vertual Functions
 	void virtual Setup();
