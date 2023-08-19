@@ -26,13 +26,13 @@ pagetitle.route = "Users";
 // All Tasks - Get
 router.get('/', async (req, res) => {
   pagetitle.page = null;
-  res.render('users/users', { title: pagetitle.title(), brand: pagetitle.brand, navMenu: navMenu, users: await users.findAllUsers() });
+  res.render('users/list', { title: pagetitle.title(), brand: pagetitle.brand, navMenu: navMenu, users: await users.findAll() });
 });
 
 // Details - Get
 router.get('/details/:id', async (req, res) => {
   pagetitle.page = "Details";
-  let user = await users.findUserByUserID([req.params.id]);
+  let user = await users.findByID([req.params.id]);
   res.render('users/details', { title: pagetitle.title(), brand: pagetitle.brand, navMenu: navMenu, user: user });
 });
 
@@ -40,7 +40,7 @@ router.get('/details/:id', async (req, res) => {
 router.get('/new', async (req, res) => {
   pagetitle.page = "New";
   
-  let user = users.createUser();
+  let user = users.create();
   user.form = {
     new: 'new'
     , action: '/users'
@@ -55,7 +55,7 @@ router.post('/'
   , body('Username').not().isEmpty().withMessage('Username is required')
       .isLength({max: 60}).withMessage('Maximum Length is 60').trim().escape()
       .custom(async function (username) {
-        let user = await users.findUserByUsername(username);
+        let user = await users.findByName(username);
         if (user) {
           return await Promise.reject("Username already exists!");
         }
@@ -76,7 +76,7 @@ router.post('/'
         return res.render('users/new', { title: pagetitle.title(), brand: pagetitle.brand, navMenu: navMenu, user: user });
       }
 
-      if ((await users.insertUser(user)).affectedRows != 1) {
+      if ((await user.insert(user)).affectedRows != 1) {
         user.errors = [];
         user.errors.push({
           value: '',
@@ -97,7 +97,7 @@ router.post('/'
 router.get('/edit/:id', async (req, res) => {
   pagetitle.page = "Edit";
   
-  let user = await users.findUserByUserID([req.params.id]);
+  let user = await users.findByID([req.params.id]);
   user.form = {
     edit: 'edit'
     , action: '/users/edit'
@@ -112,7 +112,7 @@ router.post('/edit'
 , body('Username').not().isEmpty().withMessage('Username is required')
 .isLength({max: 60}).withMessage('Maximum Length is 60').trim().escape()
 .custom(async function (username, {req}) {
-      let user = await users.findUserByUsername(username);
+      let user = await users.findByName(username);
 
       if (user && user.UserID != req.body.UserID) {
         return await Promise.reject("Username already exists!");
@@ -134,7 +134,7 @@ router.post('/edit'
     return res.render('users/new', { ttitle: pagetitle.title(), brand: pagetitle.brand, navMenu: navMenu, user: user});
   }
 
-  if ((await users.updateUser(user)).affectedRows != 1) {
+  if ((await users.update(user)).affectedRows != 1) {
     user.errors = [];
         user.errors.push({
           value: '',
@@ -150,7 +150,7 @@ router.post('/edit'
 
 // Delete
 router.delete('/' , async (req, res) => {
-  return res.send(await users.deleteUser(req.body.RecordID));
+  return res.send(await users.delete(req.body.RecordID));
 });
 
 module.exports = router;

@@ -7,7 +7,7 @@ module.exports = {
     , Color: null    
 };
 
-module.exports.createUser = function createUser(UserID, Username, color) {
+module.exports.create = function create(UserID, Username, color) {
     return {
         UserID: UserID
         , Username: Username
@@ -15,7 +15,7 @@ module.exports.createUser = function createUser(UserID, Username, color) {
     }
 };
 
-module.exports.findAllUsers = async function findAllUsers() {
+module.exports.findAll = async function findAll() {
     try {
         return await mdb.pool.query("Select * from users");
     } catch (err) {
@@ -23,29 +23,29 @@ module.exports.findAllUsers = async function findAllUsers() {
     }
 };
 
-module.exports.findUserByUserID = async function findUserByUserID(UserID) {
+module.exports.findByID = async function findByID(UserID) {
     try {
         const result = await mdb.pool.query("Select * from users where UserID = ?", UserID);
         if (result && result.length == 1) {
-            return this.createUser(result[0].UserID, result[0].Username, result[0].Color);
+            return this.create(result[0].UserID, result[0].Username, result[0].Color);
         }
     } catch (err) {
         throw err;
     }
 };
 
-module.exports.findUserByUsername = async function findUserByUsername(Username) {
+module.exports.findByName = async function findByName(Username) {
     try {
         const result = await mdb.pool.query("Select * from users where Username = ?", [Username]);
         if (result && result.length == 1) {
-            return this.createUser(result[0].UserID, result[0].Username, result[0].Color);
+            return this.create(result[0].UserID, result[0].Username, result[0].Color);
         }
     } catch (err) {
         throw err;
     }
 };
 
-module.exports.insertUser = async function inserUser(user) {
+module.exports.insert = async function insert(user) {
     try {
         return await mdb.pool.query("insert into users (Username, Color) values (?, ?)", [user.Username, user.Color]);
     } catch (err) {
@@ -53,7 +53,7 @@ module.exports.insertUser = async function inserUser(user) {
     }
 };
 
-module.exports.updateUser = async function updateUser(user) {
+module.exports.update = async function update(user) {
     try {
         return await mdb.pool.query("Update users set Username = ?, Color = ? where UserID = ?", [user.Username, user.Color, user.UserID]);
     } catch (err) {
@@ -61,7 +61,7 @@ module.exports.updateUser = async function updateUser(user) {
     }
 };
 
-module.exports.deleteUser = async function deleteUser(userID) {
+module.exports.delete = async function deleteRecord(userID) {
     try {
         return await mdb.pool.query("Delete from users where UserID = ?", [userID]);
     } catch (err) {

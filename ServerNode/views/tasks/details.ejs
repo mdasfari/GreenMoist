@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('../_shared/_head', title); %>
+    <link rel="stylesheet" href="/lib/swal/sweetalert2.min.css" type="text/css" />
+</head>
+<body>
+    <div class="mainGrid">
+        <header>
+            <%- include('../_shared/_navigator', brand, navMenu); %>
+        </header>
+        <main>
+            <!-- Body Start here -->
+            <div class="container">
+                    <label for="Name" class="form-label">Name</label>
+                    <input type="text" class="form-control" value="<%=task.Name%>" readonly />
+                    <hr />
+                    <a class="btn btn-warning" href="/tasks/edit/<%=task.TaskID%>">Edit</a>
+                    <button id="deleteButton" type="button" class="btn btn-danger" onclick="delete('/tasks', <%=task.TaskID%>, '<%=task.Name%>', '/tasks')">Delete</button>
+                    <a class="btn btn-secondary" href="/tasks">Return</a>
+            </div>
+            <!-- Body End here -->
+        </main>
+        <footer>
+            <%- include('../_shared/_footer'); %>
+        </footer>
+    </div>
+    <%- include('../_shared/_scripts'); %>
+    <script src="/lib/swal/sweetalert2.min.js" type="text/javascript"></script>
+    <script src="/javascripts/crud.js" type="text/javascript"></script>
+</body>
+</html>
+

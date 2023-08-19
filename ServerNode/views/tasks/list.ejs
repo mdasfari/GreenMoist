@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('../_shared/_head', title); %>
+</head>
+<body>
+    <div class="mainGrid">
+        <header>
+            <%- include('../_shared/_navigator', brand, navMenu); %>
+        </header>
+        <main>
+            <!-- Body Start here -->
+            <h3>Tasks</h3>
+            <div class="tableContainer">
+                <table class="table table-striped indexTable">
+                    <colgroup>
+                        <col style="width:10px;" />
+                        <col style="width:98%;" />
+                    </colgroup>
+                    <thead>
+                        <tr>
+                            <td colspan="2">
+                                <a href="/tasks/new" class="linkbutton">New</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>#</th>
+                            <th>Name</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% tasks.forEach(function(task) { %>
+                            <tr>
+                                <td></td>
+                                <td><a href="/tasks/details/<%= task.TaskID %>"><%= task.Name %></a></td>
+                            </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
+            </div>
+            <!-- Body End here -->
+        </main>
+        <footer>
+            <%- include('../_shared/_footer'); %>
+        </footer>
+    </div>
+    <%- include('../_shared/_scripts'); %>
+</body>
+</html>
