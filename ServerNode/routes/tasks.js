@@ -123,7 +123,7 @@ router.post('/edit'
 
 // Delete
 router.delete('/' , async (req, res) => {
-  return res.send(await tasks.delete(req.body.TaskID));
+  return res.send(await tasks.delete(req.body.RecordID));
 });
 
 module.exports = router;

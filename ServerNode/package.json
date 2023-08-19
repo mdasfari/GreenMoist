@@ -18,7 +18,8 @@
     "express-validator": "^7.0.1",
     "http-errors": "~1.6.3",
     "mariadb": "^3.2.0",
-    "morgan": "~1.9.1"
+    "morgan": "~1.9.1",
+    "sweetalert2": "^11.7.26"
   },
   "repository": {
     "type": "git",

@@ -16,7 +16,7 @@
                     <input type="text" class="form-control" value="<%=task.Name%>" readonly />
                     <hr />
                     <a class="btn btn-warning" href="/tasks/edit/<%=task.TaskID%>">Edit</a>
-                    <button id="deleteButton" type="button" class="btn btn-danger" onclick="delete('/tasks', <%=task.TaskID%>, '<%=task.Name%>', '/tasks')">Delete</button>
+                    <button id="deleteButton" type="button" class="btn btn-danger" onclick="deleteRecord('/tasks', <%=task.TaskID%>, '<%=task.Name%>', '/tasks')">Delete</button>
                     <a class="btn btn-secondary" href="/tasks">Return</a>
             </div>
             <!-- Body End here -->
