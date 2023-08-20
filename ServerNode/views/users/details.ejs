@@ -11,17 +11,15 @@
         </header>
         <main>
             <!-- Body Start here -->
-            <div class="detailContainer">
-                {{#with user}}
-                    <label for="Username"><b>Username</b></label>
-                    <input type="text" value="{{Username}}" readonly />
-                    <label for="Color"><b>Color</b></label>
-                    <div class="colorIcon" style="background-color: {{Color}};"></div>
+            <div class="container">
+                    <label for="Username" class="form-label">Username</label>
+                    <input id="Username" type="text" class="form-control" value="<%=model.Username%>" readonly />
+                    <label for="Color" class=""form-label>Color</label>
+                    <div class="colorIcon form-control" style="background-color: <%=model.Color%>; width: 40px; height: 40px;"></div>
                     <hr />
-                    <a href="/users/edit/{{UserID}}">Edit</a>
-                    <button id="deleteButton" type="button" class="button redButton" onclick="deleteRecord('/users', {{UserID}}, '{{Username}}', '/users')">Delete</button>
-                    <a href="/users">Return</a>
-                {{/with}}
+                    <a class="btn btn-warning" href="/users/edit/<%=model.UserID%>">Edit</a>
+                    <button id="deleteButton" type="button" class="btn btn-danger" onclick="deleteRecord('/users', <%=model.UserID%>, '<%=model.Username%>', '/users')">Delete</button>
+                    <a class="btn btn-secondary" href="/users">Return</a>
             </div>
             <!-- Body End here -->
         </main>
@@ -34,4 +32,3 @@
     <script src="/javascripts/crud.js" type="text/javascript"></script>
 </body>
 </html>
-

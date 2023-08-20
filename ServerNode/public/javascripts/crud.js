@@ -8,17 +8,19 @@ async function deleteRecord(deleteURL, recordID, message, targetURL) {
         , showCloseButton: true})
     .then(dialogResult =>{
         if (dialogResult.isConfirmed) {
+            console.log("Message Box response back");
+            console.log("dialof resule:", dialogResult);
             fetch(deleteURL, {
                 method: 'delete'
                 , headers: {'Content-Type': 'application/json'}
                 , body: JSON.stringify({ RecordID: recordID })})
             .then(res => {
-                console.log(res);
+                console.log("delete response: ", res);
                 if (res.ok) {
                     return res.json();
                 }})
             .then(response => {
-                console.log(response);
+                console.log("response: ", response);
                 if (response.affectedRows == 1) {
                     window.location = targetURL;
                 }

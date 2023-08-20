@@ -9,8 +9,8 @@
             <%- include('../_shared/_navigator', brand, navMenu); %>
         </header>
         <main>
+            <h3><%=title%></h3>
             <!-- Body Start here -->
-            <h3>Tasks</h3>
             <div class="tableContainer">
                 <table class="table table-striped indexTable">
                     <colgroup>
@@ -29,10 +29,10 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <% tasks.forEach(function(task) { %>
+                        <% model.forEach(function(record) { %>
                             <tr>
                                 <td></td>
-                                <td><a href="/tasks/details/<%= task.TaskID %>"><%= task.Name %></a></td>
+                                <td><a href="/tasks/details/<%= record.TaskID %>"><%= record.Name %></a></td>
                             </tr>
                         <% }); %>
                     </tbody>

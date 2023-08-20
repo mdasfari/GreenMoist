@@ -1,53 +1,47 @@
-/*var express = require('express');
-const mdb = require('bin/_mdbConfig');
-var router = express.Router();
-*/
-/* GET users listing. */
-/*
-router.get('/', function(req, res, next) {
-  res.send('respond with a resource');
-});
-
-module.exports = router;
-*/
 const express = require('express');
 const router = express.Router();
 const navMenu = require('../routes/_navigation');
-const users = require('../models/user');
-const pagetitle = require('../models/pageInformation');
+const dataModel = require('../models/user');
 
 // Validator
 const {body , validationResult } = require('express-validator');
+let pageInformation = require('../models/pageInformation');
 
 // Page Information
-pagetitle.brand = process.env.APP_NAME;
-pagetitle.route = "Users";
+pageInformation.brand = process.env.APP_NAME;
+const pageRoute = "users";
 
 // All Tasks - Get
 router.get('/', async (req, res) => {
-  pagetitle.page = null;
-  res.render('users/list', { title: pagetitle.title(), brand: pagetitle.brand, navMenu: navMenu, users: await users.findAll() });
+  pageInformation.page = null;
+  res.render(pageRoute  + '/list', 
+    { title: pageInformation.title(), 
+      brand: pageInformation.brand, 
+      navMenu: navMenu, 
+      model: await dataModel.findAll() });
 });
 
 // Details - Get
 router.get('/details/:id', async (req, res) => {
-  pagetitle.page = "Details";
-  let user = await users.findByID([req.params.id]);
-  res.render('users/details', { title: pagetitle.title(), brand: pagetitle.brand, navMenu: navMenu, user: user });
+  pageInformation.page = "Details";
+  res.render(pageRoute  + '/details', 
+    { title: pageInformation.title(), 
+      brand: pageInformation.brand, 
+      navMenu: navMenu, model: await dataModel.findByID([req.params.id]) });
 });
 
 // New Get
 router.get('/new', async (req, res) => {
-  pagetitle.page = "New";
+  pageInformation.page = "New";
   
-  let user = users.create();
-  user.form = {
-    new: 'new'
-    , action: '/users'
-  };
+  let data = dataModel.create();
+  // This to inform the new.ejs that you are in new record
+  data.form = {new: 'new', action: '/' + pageRoute };
 
-  res.render('users/new', { title: pagetitle.title(), brand: pagetitle.brand, navMenu: navMenu, user: user});
-  console.log(`${pagetitle.title()} page renderd`);
+  res.render(pageRoute + '/entry', 
+  { title: pageInformation.title(), 
+    brand: pageInformation.brand, 
+    navMenu: navMenu, model: data});
 });
 
 // New POST
@@ -55,56 +49,55 @@ router.post('/'
   , body('Username').not().isEmpty().withMessage('Username is required')
       .isLength({max: 60}).withMessage('Maximum Length is 60').trim().escape()
       .custom(async function (username) {
-        let user = await users.findByName(username);
-        if (user) {
+        let data = await dataModel.findByName(username);
+        if (data) {
           return await Promise.reject("Username already exists!");
         }
       })
   , async (req, res) => {
-      pagetitle.page = "New";
+      pageInformation.page = "New";
       
-      let user = req.body;
-      user.form = {
-        new: 'new'
-        , action: '/users'
-      };
+      let data = req.body;
+      data.form = {new: 'new', action: '/' + pageRoute };
       
       // Validation
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
-        user.errors = errors.array();
-        return res.render('users/new', { title: pagetitle.title(), brand: pagetitle.brand, navMenu: navMenu, user: user });
+        data.errors = errors.array();
+        return res.render(pageRoute + '/entry', 
+            { title: pageInformation.title(), 
+              brand: pageInformation.brand, 
+              navMenu: navMenu, model: data });
       }
 
-      if ((await user.insert(user)).affectedRows != 1) {
-        user.errors = [];
-        user.errors.push({
+      if ((await dataModel.insert(data)).affectedRows != 1) {
+        data.errors = [];
+        data.errors.push({
           value: '',
           msg: 'Unable to post the record',
           param: 'form',
           location: 'body'
         });
 
-        return res.render('users/new', { title: pagetitle.title(), brand: pagetitle.brand, navMenu: navMenu, user: user});
+        return res.render(pageRoute + '/entry', 
+          { title: pageInformation.title(), 
+            brand: pageInformation.brand, 
+            navMenu: navMenu, model: data});
       }
-
-      res.redirect('/Users', );
-
-      console.log('Finished User Creation!!!');
+      res.redirect('/' + pageRoute);
 });
 
 // Edit - Get
 router.get('/edit/:id', async (req, res) => {
-  pagetitle.page = "Edit";
+  pageInformation.page = "Edit";
   
-  let user = await users.findByID([req.params.id]);
-  user.form = {
-    edit: 'edit'
-    , action: '/users/edit'
-  };
+  let data = await dataModel.findByID([req.params.id]);
+  data.form = {edit: 'edit', action: '/' + pageRoute + '/edit'};
 
-  res.render('users/new', { title: pagetitle.title(), brand: pagetitle.brand, navMenu: navMenu, user: user});
-  console.log(`${pagetitle.title()} page renderd`);
+  res.render(pageRoute + '/entry', 
+    { title: pageInformation.title(), 
+      brand: pageInformation.brand, 
+      navMenu: navMenu, model: data});
 });
 
 // Edit - Post
@@ -112,45 +105,58 @@ router.post('/edit'
 , body('Username').not().isEmpty().withMessage('Username is required')
 .isLength({max: 60}).withMessage('Maximum Length is 60').trim().escape()
 .custom(async function (username, {req}) {
-      let user = await users.findByName(username);
+      let data = await dataModel.findByName(username);
 
-      if (user && user.UserID != req.body.UserID) {
+      if (data && data.UserID != req.body.UserID) {
         return await Promise.reject("Username already exists!");
       }
 })
 , async (req, res) => {
 
-  pagetitle.page = "Edit";
-  let user = req.body;
-  user.form = {
-    edit: 'edit'
-    , action: '/users/edit'
+  pageInformation.page = "Edit";
+  let data = req.body;
+  data.form = {edit: 'edit', action: '/' + pageRoute + '/edit'
   };
 
   // Validation
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    user.errors = errors.array();
-    return res.render('users/new', { ttitle: pagetitle.title(), brand: pagetitle.brand, navMenu: navMenu, user: user});
+    data.errors = errors.array();
+    return res.render(pageRoute + '/entry', 
+    { title: pageInformation.title(), 
+      brand: pageInformation.brand, 
+      navMenu: navMenu, model: data});
   }
 
-  if ((await users.update(user)).affectedRows != 1) {
-    user.errors = [];
-        user.errors.push({
+  if ((await dataModel.update(data)).affectedRows != 1) {
+    data.errors = [];
+        data.errors.push({
           value: '',
           msg: 'Unable to update the record',
           param: 'form',
           location: 'body'
         });
 
-    return res.render('users/new', { title: pagetitle.title(), brand: pagetitle.brand, navMenu: navMenu, user: user});
+    return res.render(pageRoute + '/entry', 
+      { title: pageInformation.title(), 
+        brand: pageInformation.brand, 
+        navMenu: navMenu, 
+        model: data});
   }
-  res.redirect('/users');
+  res.redirect('/' + pageRoute);
 });
 
 // Delete
 router.delete('/' , async (req, res) => {
-  return res.send(await users.delete(req.body.RecordID));
+  /* the following is a bug in the code. since the insertedID is a natrural number,
+  * stringify cannot handle BigInt and alos for security resones I should not return 
+  * the database to the front end app. the following changed from now on
+  * return res.send(await users.delete(req.body.RecordID));
+  */
+  let result = await dataModel.delete(req.body.RecordID);
+  let stringifyed = JSON.stringify({
+    affectedRows: result.affectedRows, warningStatus: result.warningStatus});
+  return res.send(stringifyed);
 });
 
 module.exports = router;

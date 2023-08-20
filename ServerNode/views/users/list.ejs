@@ -9,6 +9,7 @@
             <%- include('../_shared/_navigator', brand, navMenu); %>
         </header>
         <main>
+            <h3><%=title%></h3>
             <!-- Body Start here -->
             <div class="tableContainer">
                 <table class="table table-striped indexTable">
@@ -25,14 +26,14 @@
                             </td>
                         </tr>
                         <tr>
-                            <th></th>
+                            <th>#</th>
                             <th>Username</th>
                             <th>Tasks</th>
                             <th>Open Tasks</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <% users.forEach(function(usr) { %>
+                        <% model.forEach(function(usr) { %>
                             <tr>
                                 <td><div class="colorIcon" style="background-color: <%= usr.Color %>;"></div></td>
                                 <td><a href="/users/details/<%= usr.UserID %>"><%= usr.Username %></a></td>

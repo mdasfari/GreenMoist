@@ -1,7 +1,7 @@
-var express = require('express');
-var router = express.Router();
-var navMenu = require('./_navigation');
-var pagetitle = require('../models/pageInformation');
+const express = require('express');
+const router = express.Router();
+const navMenu = require('./_navigation');
+let pageInformation = require('../models/pageInformation');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -19,10 +19,10 @@ router.get('/', function(req, res, next) {
   console.log('DATABASE_USER: ', process.env.DATABASE_USER);
   console.log('DATABASE_PASSWORD: ', process.env.DATABASE_PASSWORD);
   
-  pagetitle.brand = process.env.APP_NAME;
-  pagetitle.route = "Home Page";
+  pageInformation.brand = process.env.APP_NAME;
+  pageInformation.route = "Home Page";
   
-  res.render('index', { title: pagetitle.title(), brand: pagetitle.brand, navMenu: navMenu});
+  res.render('index', { title: pageInformation.title(), brand: pageInformation.brand, navMenu: navMenu});
 });
 
 module.exports = router;

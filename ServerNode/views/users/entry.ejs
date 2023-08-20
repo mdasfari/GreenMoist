@@ -13,20 +13,29 @@
             <div class="container">
                 <form action="<%=model.form.action%>" method="POST">
                     <% if(model.form.edit) { %>
-                        <input name="TaskID" type="hidden" value="<%=model.TaskID%>" />
+                        <input name="UserID" type="hidden" value="<%=model.UserID%>" />
                     <% } %>
-                    <label for="Name" class="form-label">Name</label>
-                    <input id="Name" class="form-control" type="text" placeholder="Name" name="Name" value="<%=model.Name%>" />
+                    <label for="Username" class="form-label">Username</label>
+                    <input id="Username" class="form-control" type="text" placeholder="Username" name="Username" value="<%=model.Username%>" />
                     <% if (model.errors) { 
                         model.errors.forEach(function(error) {
-                            if(error.path == 'Name') { %>
+                            if(error.path == 'Username') { %>
+                                <div class="form-text text-danger"><%=error.msg%></div>
+                    <%      }
+                        });
+                    } %>
+                    <label for="Color" class="form-label">Color</label>
+                    <input id="Color" class="form-control" type="color" name="Color" value="<%=model.Color%>" />
+                    <% if (model.errors) { 
+                        model.errors.forEach(function(error) {
+                            if(error.path == 'Color') { %>
                                 <div class="form-text text-danger"><%=error.msg%></div>
                     <%      }
                         });
                     } %>
                     <hr />
                     <button type="submit" class="btn btn-success">Submit</button>
-                    <a href="/tasks" class="btn btn-secondary">Cancel</a>
+                    <a href="/users" class="btn btn-secondary">Cancel</a>
                 </form>
             </div>
             <!-- Body End here -->
