@@ -1,1 +1,5 @@
 g++.exe -g .\StateMachine\*.cpp  .\StateMachine\Base\*.cpp .\StateMachine\States\*.cpp .\*.cpp -std=c++20  -o ..\Builds\ActiveNode\ActiveNode.exe
+
+
+cmake -G "NMake Makefiles" ..
+nmake

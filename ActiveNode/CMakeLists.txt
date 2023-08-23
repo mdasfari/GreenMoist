@@ -7,7 +7,7 @@ add_executable(ActiveNode
         )
 
 # pull in common dependencies
-target_link_libraries(ActiveNode pico_stdlib)
+target_link_libraries(ActiveNode pico_stdlib hardware_adc)
 
 # create map/bin/hex/uf2 file etc.
 pico_add_extra_outputs(ActiveNode)

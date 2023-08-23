@@ -59,14 +59,18 @@ void StateMachine::setIdleStateID(std::string state)
 
 void StateMachine::changeState(std::string newStateID)
 {
-    State* currentState = &_allStates[_currentStateID];
     State* newState = &_allStates[newStateID];
+    State* currentState;
+    if(!_currentStateID.empty())
+    {
+        currentState = &_allStates[_currentStateID];
+        
+        //_allStates[_currentStateID].Exit();
+        //_allStates[newStateID].Enter();
 
-    //_allStates[_currentStateID].Exit();
-    //_allStates[newStateID].Enter();
-
-    currentState->Exit();
-    newState->Enter();
+        currentState->Exit();
+        newState->Enter();
+    }
 
     _currentStateID = newStateID;
 }
