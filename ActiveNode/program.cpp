@@ -1,6 +1,8 @@
-#include <iostream>
 #include <string>
-#include <windows.h>
+
+#include <stdio.h>
+#include "pico/stdlib.h"
+
 #include "StateMachine/StateMachine.h"
 #include "StateMachine/States/StatusState.h"
 
@@ -21,23 +23,33 @@ int main()
     _taskFSM.add(waterState);
 
     // Testing FSM
-    std::cout << "Green Moise Active Node\n=======================\n\n";
+    /* std::cout << "Green Moise Active Node\n=======================\n\n";
     std::cout << "States Count: " << _taskFSM.count() << "\n";
 
-    for(const auto& key : _taskFSM.getKeys())
-    {
-        std::cout << "Key: " << key << "\n";
-    }
-    /*
     for(auto stat : _taskFSM)
     {
         std::cout << stat.second.getStateID();
     }
-    */
+
     std::cout << "\n";
     std::cout << "Test: " << _taskFSM["Nada"]->getStateID() << "\n";
+    */
 
-    while (!(GetKeyState('Q') & 0x8000))
+    stdio_init_all();
+    printf("Green Moise Active Node\n=======================\n\n");
+    printf("States Count: " + _taskFSM.count());
+    printf("\n");
+
+
+    for(auto stat : _taskFSM)
+    {
+        printf(stat.second.getStateID().c_str());
+        printf("\n");
+    }
+
+    printf("\n");
+
+    while (true) // this for windows testing (!(GetKeyState('Q') & 0x8000))
     {
         _taskFSM.Update();
     }
