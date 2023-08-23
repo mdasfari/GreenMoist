@@ -12,6 +12,7 @@ StateMachine::~StateMachine()
 
 void StateMachine::add(State state)
 {
+    state.Setup();
     _allStates.insert({state.getStateID(), state});
 }
 
@@ -46,6 +47,16 @@ bool StateMachine::isEmpty()
 }
 
 // State Getter and Setter
+std::string StateMachine::getIdleStateID()
+{
+    return _idleStateID;
+}
+
+void StateMachine::setIdleStateID(std::string state)
+{
+    _idleStateID = state;
+}
+
 void StateMachine::changeState(std::string newStateID)
 {
     State* currentState = &_allStates[_currentStateID];
@@ -72,7 +83,15 @@ State StateMachine::getCurrentState()
 
 void StateMachine::Update()
 {
-    _allStates[_currentStateID].Update();
+    State* currentState = &_allStates[_currentStateID];
+    currentState->Update();
+    if(currentState->IsStateChanged())
+    {
+        if (currentState->getConditionStatus())
+            changeState(currentState->getTrueState());
+        else
+            changeState(currentState->getFalseState());
+    }
 }
 
 State* StateMachine::operator[] (const std::string key)

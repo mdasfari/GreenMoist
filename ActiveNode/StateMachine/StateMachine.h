@@ -10,6 +10,8 @@ private:
 	std::map<std::string, State> _allStates;
 	std::string _currentStateID;
 
+	std::string _idleStateID;
+
 public:
 	StateMachine();
 	~StateMachine();
@@ -28,6 +30,13 @@ public:
 	bool isEmpty();
 
 	// State Getter and Setter
+	/* This variable holds the idle state which 
+	 * will be executed every time any other 
+	 * State finished.
+	 */
+	std::string getIdleStateID();
+	void setIdleStateID(std::string state);
+
 	void changeState(std::string newStateID);
 	std::string getCurrentStateID();
 	State getCurrentState();
