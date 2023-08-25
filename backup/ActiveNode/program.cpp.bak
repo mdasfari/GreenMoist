@@ -1,0 +1,90 @@
+#define __DEBUG__ 1
+
+#include <string>
+
+#include <stdio.h>
+#include "pico/stdlib.h"
+
+#include "StateMachine/StateMachine.h"
+#include "StateMachine/States/StatusState.h"
+
+#define CHECK_SOIL "CHECK_SOIL" 
+#define CHECK_WATER "CHECK_WATER" 
+
+int main()
+{
+#ifdef __DEBUG__
+    printf("Green Moise Active Node started\n====================================\n");
+#endif
+
+    StateMachine _taskFSM{};
+
+#ifdef __DEBUG__
+    printf("FSM intialized\n====================================\n");
+#endif
+
+    StatusState  soilState(CHECK_SOIL, 15, 100, 500);
+
+#ifdef __DEBUG__
+    printf("soilState intialized\n====================================\n");
+#endif
+
+#ifdef __DEBUG__
+    printf("Adding soilState\n====================================\n");
+#endif
+    //soilState.setTrueState(CHECK_WATER);
+    _taskFSM.add(soilState);
+
+    _taskFSM.add(StatusState{"Uname 1", 16, 100, 500});
+    _taskFSM.add(StatusState{"Uname 2", 16, 100, 500});
+    _taskFSM.add(StatusState{"Uname 3", 16, 100, 500});
+    _taskFSM.add(StatusState{"Uname 4", 16, 100, 500});
+    _taskFSM.add(StatusState{"Uname 5", 16, 100, 500});
+
+
+
+
+    _taskFSM.setIdleStateID(CHECK_SOIL);
+    _taskFSM.changeState(CHECK_SOIL);
+
+    //StatusState  waterState(CHECK_WATER, 25, 100, 500);
+    //_taskFSM.add(waterState);
+
+    // Testing FSM
+    /* std::cout << "Green Moise Active Node\n=======================\n\n";
+    std::cout << "States Count: " << _taskFSM.count() << "\n";
+
+    for(auto stat : _taskFSM)
+    {
+        std::cout << stat.second.getStateID();
+    }
+
+    std::cout << "\n";
+    std::cout << "Test: " << _taskFSM["Nada"]->getStateID() << "\n";
+    */
+
+    stdio_init_all();
+#ifdef __DEBUG__    
+    printf("Green Moise Active Node\n=======================\n\n");
+    printf("States Count: %d\n" + _taskFSM.count());
+#endif
+
+    for(auto stat : _taskFSM)
+    {
+        #ifdef __DEBUG__    
+        printf("%s\n", stat.second.getStateID().c_str());
+        #endif
+    }
+
+
+        #ifdef __DEBUG__    
+        printf("Next the FSM will start\n");
+        #endif
+
+    while (true) // this for windows testing (!(GetKeyState('Q') & 0x8000))
+    {
+        _taskFSM.Update();
+    }
+
+    return 0;
+}
