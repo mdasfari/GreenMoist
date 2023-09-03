@@ -12,8 +12,8 @@ int main() {
     adc_init();
 
     // Make sure GPIO is high-impedance, no pullups etc
-    adc_gpio_init(15); //State::getPinNumber()
-    // Select ADC input 0 (GPIO15)
+    adc_gpio_init(26); //State::getPinNumber()
+    // Select ADC input 0 (GPIO26)
     adc_select_input(0);
 
     while(true)

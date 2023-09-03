@@ -5,7 +5,7 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var dotenv = require('dotenv');
 
-dotenv.config({path: './.env'});
+dotenv.config({path: './app.config'});
 
 var app = express();
 
