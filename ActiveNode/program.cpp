@@ -2,8 +2,10 @@
 #include "pico/stdlib.h"
 #include "hardware/gpio.h"
 #include "hardware/adc.h"
+#include "lwipopts.h"
+#include "pico/cyw43_arch.h"
 
-#define ADC_NUM 0
+ #define ADC_NUM 0
 #define ADC_PIN (26 + ADC_NUM)
 #define ADC_VREF 3.3
 #define ADC_RANGE (1 << 12)
@@ -14,9 +16,32 @@ const uint WATER_LEVEL_PIN = 27;
 
 const uint WATER_PUMP = 15;
 
+/*
+ * Network settings
+ */
+char ssid[] = "LowZoneGamma";
+char pass[] = "WKV@62YQJG$7";
+
 
 int main() {
     stdio_init_all();
+
+    sleep_ms(2000);
+
+    if (cyw43_arch_init_with_country(CYW43_COUNTRY_UK)) {
+        printf("failed to initialise\n");
+        return 1;
+    }
+
+    printf("initialised\n");
+    cyw43_arch_enable_sta_mode();
+
+    if (cyw43_arch_wifi_connect_timeout_ms(ssid, pass, CYW43_AUTH_WPA2_AES_PSK, 10000)) {
+        printf("failed to connect\n");
+        return 1;
+    }
+    printf("connected\n");
+
 
     
     
@@ -34,8 +59,6 @@ int main() {
 
     uint analogReadPin {0};
     uint gpoPin {0};
-
-    sleep_ms(2000);
 
     printf("ADC Reading GPIO15\n");
     printf("GPO\tRaw value\tHex value\tVoltage\n");
