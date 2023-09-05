@@ -2,46 +2,59 @@ const express = require('express');
 const router = express.Router();
 const navMenu = require('../routes/_navigation');
 const dataModel = require('../models/task');
+const itemsModel = require('../models/taskprocess');
 
 // Validator
 const {body , validationResult } = require('express-validator');
-let pageInformation = require('../models/pageInformation');
+const generalFunctions = require('../bin/_generalFunctions');
 
 // Page Information
-pageInformation.brand = process.env.APP_NAME;
-const pageRoute = "Tasks";
+const pageBrand = process.env.APP_NAME;
+const routeTitle = "Tasks";
+const routeAddress = "tasks";
+let pageTitle;
+let pageAddress;
 
 // All Tasks - Get
 router.get('/', async (req, res) => {
-  pageInformation.page = null;
-  
-  res.render('tasks/list', 
-    { title: pageInformation.title(), 
-      brand: pageInformation.brand, 
+  pageTitle = null;
+  pageAddress = "/list";
+
+  res.render(routeAddress + pageAddress, 
+    { title: generalFunctions.getTitle(routeTitle, pageTitle), 
+      brand: pageBrand, 
       navMenu: navMenu, 
       model: await dataModel.findAll() });
 });
 
 // Details - Get
 router.get('/details/:id', async (req, res) => {
-  pageInformation.page = "Details";
-  res.render(pageRoute  + '/details', 
-    { title: pageInformation.title(), 
-      brand: pageInformation.brand, 
-      navMenu: navMenu, model: await dataModel.findByID([req.params.id]) });
+  pageTitle = "Details";
+  pageAddress = "/details";
+
+  let pageModel = await dataModel.findByID([req.params.id]);
+  if (!pageModel)
+    return;
+  pageModel.Items = await itemsModel.findByTaskID([pageModel.TaskID]);
+
+  res.render(routeAddress  + pageAddress, 
+    { title: generalFunctions.getTitle(routeTitle, pageTitle), 
+      brand: pageBrand, 
+      navMenu: navMenu, model: pageModel  });
 });
 
 // New Get
 router.get('/new', async (req, res) => {
-  pageInformation.page = "New";
-  
+  pageTitle = "New";
+  pageAddress = '/entry';
+
   let data = dataModel.create();
   // This to inform the new.ejs that you are in new record
-  data.form = {new: 'new', action: '/' + pageRoute };
+  data.form = {new: 'new', action: '/' + routeAddress };
 
-  res.render(pageRoute + '/entry', 
-  { title: pageInformation.title(), 
-    brand: pageInformation.brand, 
+  res.render(routeAddress + pageAddress, 
+  { title: generalFunctions.getTitle(routeTitle, pageTitle), 
+    brand: pageBrand, 
     navMenu: navMenu, model: data});
 });
 
@@ -50,18 +63,19 @@ router.post('/'
   , body('Name').not().isEmpty().withMessage('Name is required')
     .isLength({max: 100}).withMessage('Maximum Length is 100').trim().escape()
   , async (req, res) => {
-      pageInformation.page = "New";
-      
+      pageTitle = "New";
+      pageAddress = '/entry';
+
       let data = req.body;
-      data.form = {new: 'new', action: '/' + pageRoute };
+      data.form = {new: 'new', action: '/' + routeAddress };
       
       // Validation
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
         data.errors = errors.array();
-        return res.render(pageRoute + '/entry', 
-            { title: pageInformation.title(), 
-              brand: pageInformation.brand, 
+        return res.render(routeAddress + pageAddress, 
+            { title: generalFunctions.getTitle(routeTitle, pageTitle), 
+              brand: pageBrand, 
               navMenu: navMenu, model: data });
       }
 
@@ -74,24 +88,25 @@ router.post('/'
           location: 'body'
         });
 
-        return res.render(pageRoute + '/entry', 
-          { title: pageInformation.title(), 
-            brand: pageInformation.brand, 
+        return res.render(routeAddress + pageAddress, 
+          { title: generalFunctions.getTitle(routeTitle, pageTitle), 
+            brand: pageBrand, 
             navMenu: navMenu, model: data});
       }
-      res.redirect('/' + pageRoute);
+      res.redirect('/' + routeAddress);
 });
 
 // Edit - Get
 router.get('/edit/:id', async (req, res) => {
-  pageInformation.page = "Edit";
+  pageTitle = "Edit";
+  pageAddress = '/edit';
   
   let data = await dataModel.findByID([req.params.id]);
-  data.form = {edit: 'edit', action: '/' + pageRoute + '/edit'};
+  data.form = {edit: 'edit', action: '/' + routeAddress + pageAddress};
 
-  res.render(pageRoute + '/entry', 
-    { title: pageInformation.title(), 
-      brand: pageInformation.brand, 
+  res.render(routeAddress + '/entry', 
+    { title: generalFunctions.getTitle(routeTitle, pageTitle), 
+      brand: pageBrand, 
       navMenu: navMenu, 
       model: data});
 });
@@ -102,18 +117,20 @@ router.post('/edit'
     .isLength({max: 100}).withMessage('Maximum Length is 100').trim().escape()
   , async (req, res) => {
 
-  pageInformation.page = "Edit";
+  pageTitle = "Edit";
+  pageAddress = "/edit";
+
   let data = req.body;
-  data.form = {edit: 'edit', action: '/' + pageRoute + '/edit'
+  data.form = {edit: 'edit', action: '/' + routeAddress + pageAddress
   };
 
   // Validation
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     data.errors = errors.array();
-    return res.render(pageRoute + '/entry', 
-    { title: pageInformation.title(), 
-      brand: pageInformation.brand, 
+    return res.render(routeAddress + pageAddress, 
+    { title: generalFunctions.getTitle(routeTitle, pageTitle), 
+      brand: pageBrand, 
       navMenu: navMenu, model: data});
   }
 
@@ -126,13 +143,13 @@ router.post('/edit'
           location: 'body'
         });
 
-    return res.render(pageRoute + '/entry', 
-      { title: pageInformation.title(), 
-        brand: pageInformation.brand, 
+    return res.render(routeAddress + pageAddress, 
+      { title: generalFunctions.getTitle(routeTitle, pageTitle), 
+        brand: pageBrand, 
         navMenu: navMenu, 
         model: data});
   }
-  res.redirect('/' + pageRoute);
+  res.redirect('/' + routeAddress);
 });
 
 // Delete
@@ -149,8 +166,6 @@ router.delete('/' , async (req, res) => {
 });
 
 module.exports = router;
-
-
 
 /*
 

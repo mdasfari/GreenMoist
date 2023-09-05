@@ -12,12 +12,60 @@
         <main>
             <!-- Body Start here -->
             <div class="container">
+                <!-- Task -->
+                <h3>Information</h3>
+                <div class="form-container">
                     <label for="Name" class="form-label">Name</label>
                     <input type="text" class="form-control" value="<%=model.Name%>" readonly />
                     <hr />
                     <a class="btn btn-warning" href="/tasks/edit/<%=model.TaskID%>">Edit</a>
                     <button id="deleteButton" type="button" class="btn btn-danger" onclick="deleteRecord('/tasks', <%=model.TaskID%>, '<%=model.Name%>', '/tasks')">Delete</button>
                     <a class="btn btn-secondary" href="/tasks">Return</a>
+                </div>
+                <!-- /Task -->
+                <hr />
+                <!-- TaskProcesses -->
+                <h3>Processes</h3>
+                <div class="form-container mt-3">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <td colspan="8">
+                                    <a href="/tasks/newProcess" class="linkbutton">New</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="width: 20px;">Serial</th>
+                                <th class="col-1">Type</th>
+                                <th class="col-5">Name</th>
+                                <th class="col-1">Pin</th>
+                                <th colspan="2" class="col-2">Threshold</th>
+                                <th class="col-1">True</th>
+                                <th class="col-1">False</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- ProcessID, TaskID, ProcessSerial, ProcessType, Name, Pin, PinType, ThresholdLow, ThresholdHigh, SerialOutRawData, TrueProcessID, TrueLoopIfNull, FalseProcessID, FalseLoopIfNull -->
+                            <% if(model.items) { model.items.forEach(function(item) { %>
+                                <tr>
+                                    <td><%= item.ProcessSerial %></td>
+                                    <td><%= item.Type %></td>
+                                    <td><%= item.Name %></td>
+                                    <td><%= item.Pin %></td>
+                                    <td><%= item.ThresholdLow %></td>
+                                    <td><%= item.ThresholdHigh %></td>
+                                    <td><%= item.TrueProcessID %></td>
+                                    <td><%= item.FalseProcessID %></td>
+                                </tr>
+                            <% }); } else { %>
+                                <tr>
+                                    <td colspan="8">No data found</td>
+                                </tr>
+                            <% } %>
+                        </tbody>
+                    </table>
+                </div>
+                <!-- /TaskProcesses -->
             </div>
             <!-- Body End here -->
         </main>

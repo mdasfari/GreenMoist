@@ -9,3 +9,7 @@ exports.getColumns = function(modelObject) {
     }
     return strColumns;
 } 
+
+exports.getTitle = function(routeTitle, pageTitle) {
+    return `${routeTitle}${this.page ? ' - ' : ''}${this.page ? this.page : ''}`;
+}

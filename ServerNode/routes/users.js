@@ -5,11 +5,11 @@ const dataModel = require('../models/user');
 
 // Validator
 const {body , validationResult } = require('express-validator');
-let pageInformation = require('../models/pageInformation');
+const pageInformation = require('../models/pageInformation');
 
 // Page Information
 pageInformation.brand = process.env.APP_NAME;
-const pageRoute = "users";
+const pageTitle = "Users";
 
 // All Tasks - Get
 router.get('/', async (req, res) => {
