@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('../_shared/_head', title); %>
+</head>
+<body>
+    <div class="mainGrid">
+        <header>
+            <%- include('../_shared/_navigator', brand, navMenu); %>
+        </header>
+        <main>
+            <!-- Body Start here -->
+            <div class="container">
+                <h3>Process</h3>
+                <form action="<%=model.form.action%>" method="POST">
+                    <% if(model.form.edit) { %>
+                        <input name="ProcessID" type="hidden" value="<%=model.ProcessID%>" />
+                        <input name="TaskID" type="hidden" value="<%=model.TaskID%>" />
+                    <% } %>
+                    <!-- ProcessID, TaskID, ProcessSerial, ProcessType, Name, Pin, PinType, ThresholdLow, ThresholdHigh, SerialOutRawData, TrueProcessID, TrueLoopIfNull, FalseProcessID, FalseLoopIfNull -->
+                    <div class="card">
+                        <div class="card-header bg-primary text-bg-primary">Process</div>
+                        <div class="card-body row">
+                            <div class="col-md-2">
+                                <label class="form-label" for="ProcessSerial">Serial</label>
+                                <input class="form-control" id="ProcessSerial" ProcessSerial="Name" type="text" placeholder="Serial" value="<%=model.ProcessSerial%>" />
+                            </div>
+                            <div class="col-md-7 mt-3 mt-md-0">
+                                <label class="form-label" for="Name">Name</label>
+                                <input class="form-control" id="Name" name="Name" type="text" placeholder="Name" value="<%=model.Name%>" />
+                            </div>
+                            <div class="col-md-3 mt-3 mt-md-0">
+                                <label class="form-label" for="PocessType">Type</label>
+                                <select class="form-select" id="PocessType" name="PocessType" type="list" placeholder="Type" value="<%=model.PocessType%>">
+                                    <option value="">{Select a type}</options>
+                                    <option value="0">Status</options>
+                                    <option value="">Action</options>
+                                    <option value="">Record</options>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card mt-2">
+                        <div class="card-header bg-success text-bg-success">Pin</div>
+                        <div class="card-body row align-items-center">
+                            <div class="col-md-2">
+                                <label class="form-label" for="Pin">GPIO #</label>
+                                <input class="form-control" id="Pin" name="Pin" type="text" placeholder="Pin" value="<%=model.Pin%>" />
+                            </div>
+                            <div class="col-md-5 mt-3 mt-md-0">
+                                <label class="form-label" for="PinType">Type</label>
+                                <select class="form-select" id="PinType" name="PinType" type="list" placeholder="Type" value="<%=model.PinType%>">
+                                    <option vlaue="">{Select a type}</option>
+                                    <option vlaue="ADC">Analog</option>
+                                    <option vlaue="PWD">Pulse width modulation</option>
+                                    <option vlaue="LOGIC">Logical</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2 mt-2">
+                                <div class="form-check form-switch mt-3">
+                                    <input class="form-check-input" id="SerialOutRawData" name="SerialOutRawData" type="checkbox" />
+                                    <label class="form-check-label" for="SerialOutRawData">Debug Print</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card mt-2">
+                        <div class="card-header bg-warning text-bg-warning">
+                            <span class="card-title">Threshold</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-5">
+                                    <label class="form-label" for="ThresholdLow">Low</label>
+                                    <input class="form-control" id="ThresholdLow" name="ThresholdLow" type="text" placeholder="Low" value="<%=model.ThresholdLow%>" />
+                                </div>
+                                <div class="col-md-5 offset-md-1  mt-3 mt-md-0">
+                                    <label class="form-label" for="ThresholdHigh">High</label>
+                                    <input class="form-control" id="ThresholdHigh" name="ThresholdHigh" type="text" placeholder="High" value="<%=model.ThresholdHigh%>" />
+                                </div>
+                            </div>
+                            <div class="row mt-2">
+                                <div class="col-md-6">
+                                    <div class="card bg-success text-bg-success">
+                                        <div class="card-body">
+                                            <label class="form-label" for="TrueProcessAction">Within the threshold</label>
+                                            <select class="form-select" id="TrueProcessAction" name="TrueProcessAction" value="<%=model.TrueProcessAction%>">
+                                                <option value="0">Loop</option>
+                                                <option value="1">Go to Process Serial</option>
+                                                <option value="2">Exit</option>
+                                            </select>
+                                            <input class="form-control mt-2" id="TrueProcessID" name="TrueProcessID" placeholder="Process Serial" value="<%=model.TrueProcessID%>" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="card bg-danger text-bg-danger mt-3 mt-md-0">
+                                        <div class="card-body">
+                                            <label class="form-label" for="FalseProcessAction">Out of the threshold</label>
+                                            <select class="form-select" id="FalseProcessAction" name="FalseProcessAction" value="<%=model.FalseProcessAction%>">
+                                                <option value="0">Loop</option>
+                                                <option value="1">Go to Process Serial</option>
+                                                <option value="2">Exit</option>
+                                            </select>
+                                            <input class="form-control mt-2" id="FalseProcessID" name="FalseProcessID" placeholder="Process Serial" value="<%=model.FalseProcessID%>" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <% if (model.errors) { 
+                        model.errors.forEach(function(error) {
+                            if(error.path == 'Name') { %>
+                                <div class="form-text text-danger"><%=error.msg%></div>
+                    <%      }
+                        });
+                    } %>
+                    <hr />
+                    <button type="submit" class="btn btn-success">Submit</button>
+                    <a href="/tasks/details/<%=model.TaskID%>" class="btn btn-secondary">Cancel</a>
+                </form>
+            </div>
+            <!-- Body End here -->
+        </main>
+        <footer>
+            <%- include('../_shared/_footer'); %>
+        </footer>
+    </div>
+    <%- include('../_shared/_scripts'); %>
+</body>
+</html>

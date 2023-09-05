@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const navMenu = require('../routes/_navigation');
 const dataModel = require('../models/task');
-const itemsModel = require('../models/taskprocess');
+const itemsModel = require('../models/taskProcess');
 
 // Validator
 const {body , validationResult } = require('express-validator');
@@ -164,6 +164,9 @@ router.delete('/' , async (req, res) => {
     affectedRows: result.affectedRows, warningStatus: result.warningStatus});
   return res.send(stringifyed);
 });
+
+// Forwards for processes
+router.use('/processes', require('./tasksProcesses'));
 
 module.exports = router;
 
