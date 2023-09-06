@@ -23,15 +23,15 @@
                         <div class="card-body row">
                             <div class="col-md-2">
                                 <label class="form-label" for="ProcessSerial">Serial</label>
-                                <input class="form-control" id="ProcessSerial" ProcessSerial="Name" type="text" placeholder="Serial" value="<%=model.ProcessSerial%>" />
+                                <input class="form-control" id="ProcessSerial" name="ProcessSerial" type="text" placeholder="Serial" value="<%=model.ProcessSerial%>" />
                             </div>
                             <div class="col-md-7 mt-3 mt-md-0">
                                 <label class="form-label" for="Name">Name</label>
                                 <input class="form-control" id="Name" name="Name" type="text" placeholder="Name" value="<%=model.Name%>" />
                             </div>
                             <div class="col-md-3 mt-3 mt-md-0">
-                                <label class="form-label" for="PocessType">Type</label>
-                                <select class="form-select" id="PocessType" name="PocessType" type="list" placeholder="Type" value="<%=model.PocessType%>">
+                                <label class="form-label" for="ProcessType">Type</label>
+                                <select class="form-select" id="ProcessType" name="ProcessType" value="<%=model.ProcessType%>">
                                     <option value="">{Select a type}</option>
                                     <option value="0">Status</option>
                                     <option value="">Action</option>
@@ -81,15 +81,15 @@
                             </div>
                             <div class="col-md-5 mt-3 mt-md-0">
                                 <label class="form-label" for="PinType">Type</label>
-                                <select class="form-select" id="PinType" name="PinType" type="list"
-                                            value="<%=model.PinType%>"
-                                            data-item-values="LOGIC"
-                                            data-item-id="Execution"
-                                            onchange="OnChangeDisplay(this, 'd-none')">
-                                    <option vlaue="">{Select a type}</option>
-                                    <option class="d-none" id="AnalogEntry" vlaue="ADC">Analog</option>
-                                    <option vlaue="PWD">Pulse width modulation</option>
-                                    <option vlaue="LOGIC">Logical</option>
+                                <select class="form-select" id="PinType" name="PinType" 
+                                        value="<%=model.PinType%>"
+                                        data-item-values="2"
+                                        data-item-id="LogicType"
+                                        onchange="OnChangeDisplay(this, 'd-none')">>
+                                    <option value="">{Select a type}</option>
+                                    <option class="d-none" id="AnalogEntry" value="0">Analog</option>
+                                    <option value="1">Pulse width modulation</option>
+                                    <option value="2">Logical</option>
                                 </select>
                             </div>
                             <div class="col-md-2">
@@ -128,10 +128,10 @@
 
                                     <div class="card bg-success text-bg-success">
                                         <div class="card-body">
-                                            <label class="form-label" for="TrueProcessAction">Within the threshold</label>
-                                            <select class="form-select" id="TrueProcessAction" 
-                                                        name="TrueProcessAction" 
-                                                        value="<%=model.TrueProcessAction%>"
+                                            <label class="form-label" for="TrueProcessType">Within the threshold</label>
+                                            <select class="form-select" id="TrueProcessType" 
+                                                        name="TrueProcessType" 
+                                                        value="<%=model.TrueProcessType%>"
                                                         data-item-values="2"
                                                         data-item-id="TrueProcessID"
                                                         onchange="OnChangeDisplay(this, 'd-none')">
@@ -147,10 +147,10 @@
                                 <div class="col-md-6">
                                     <div class="card bg-danger text-bg-danger mt-3 mt-md-0">
                                         <div class="card-body">
-                                            <label class="form-label" for="FalseProcessAction">Out of the threshold</label>
-                                            <select class="form-select" id="FalseProcessAction" 
-                                                        name="FalseProcessAction" 
-                                                        value="<%=model.FalseProcessAction%>"
+                                            <label class="form-label" for="FalseProcessType">Out of the threshold</label>
+                                            <select class="form-select" id="FalseProcessType" 
+                                                        name="FalseProcessType" 
+                                                        value="<%=model.FalseProcessType%>"
                                                         data-item-values="2"
                                                         data-item-id="FalseProcessID"
                                                         onchange="OnChangeDisplay(this, 'd-none')">
@@ -166,16 +166,16 @@
                             </div>
                         </div>
                     </div>
-                    <div class="card d-none mt-2" id="Execution">
+                    <div class="card mt-2 d-none" id="LogicType">
                         <div class="card-header bg-secondary text-bg-secondary">
                             <span class="card-title">Execution</span>
                         </div>
                         <div class="card-body row align-items-end">
                             <div class="col-md-2" id="ActionTypeLogic">
-                                <label class="form-label" for="ActionLogical">Action</label>
-                                <select class="form-select" id="ActionLogical" name="ActionLogical" value="<%=model.ActionLogical%>">
-                                    <option value="0">Turn Off</option>
-                                    <option value="1">Turn On</option>
+                                <label class="form-label" for="ActionType">Action</label>
+                                <select class="form-select" id="ActionType" name="ActionType" value="<%=model.ActionType%>">
+                                    <option value="false">Turn Off</option>
+                                    <option value="true">Turn On</option>
                                 </select>
                             </div>
                         </div>

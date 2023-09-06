@@ -28,17 +28,18 @@ router.get('/details/:id', async (req, res) => {
   res.render(routeAddress  + pageAddress, 
     { title: generalFunctions.getTitle(routeTitle, pageTitle), 
       brand: pageBrand, 
-      navMenu: navMenu, model: pageModel  });
+      navMenu: navMenu, model: pageModel });
 });
 
 // New Get
-router.get('/new', async (req, res) => {
+router.get('/new/:taskID', async (req, res) => {
   pageTitle = "New";
   pageAddress = '/entry';
 
   let data = dataModel.create();
+  data.TaskID = req.params.taskID;
   // This to inform the new.ejs that you are in new record
-  data.form = {new: 'new', action: '/' + routeAddress };
+  data.form = {new: 'new', action: '/tasks/processes/new/' + req.params.taskID };
 
   res.render(routeAddress + pageAddress, 
   { title: generalFunctions.getTitle(routeTitle, pageTitle), 
@@ -46,43 +47,80 @@ router.get('/new', async (req, res) => {
     navMenu: navMenu, model: data});
 });
 
-// // New POST
-// router.post('/'
-//   , body('Name').not().isEmpty().withMessage('Name is required')
-//     .isLength({max: 100}).withMessage('Maximum Length is 100').trim().escape()
-//   , async (req, res) => {
-//       pageTitle = "New";
-//       pageAddress = '/entry';
+// New POST
+router.post('/new/:taskID'
+  , body('Name').not().isEmpty().withMessage('Name is required')
+    .isLength({max: 50}).withMessage('Maximum Length is 100').trim().escape()
+  , async (req, res) => {
+      pageTitle = "New";
+      pageAddress = '/entry';
 
-//       let data = req.body;
-//       data.form = {new: 'new', action: '/' + routeAddress };
+      let data = req.body;
+      if (!data.TaskId)
+        data.TaskID = req.params.taskID
+  
+      if (data.Pin == '')
+        data.Pin = null;
+  
+      if (data.PinType == '')
+        data.PinType = null;
+
+      if (data.SerialOutRawData == 'on')
+        data.SerialOutRawData = true;
+      else
+        data.SerialOutRawData = false;
       
-//       // Validation
-//       const errors = validationResult(req);
-//       if (!errors.isEmpty()) {
-//         data.errors = errors.array();
-//         return res.render(routeAddress + pageAddress, 
-//             { title: generalFunctions.getTitle(routeTitle, pageTitle), 
-//               brand: pageBrand, 
-//               navMenu: navMenu, model: data });
-//       }
+      if (data.BroadcastValue == 'on')
+        data.BroadcastValue = true;
+      else
+        data.BroadcastValue = false;
+    
+      if (data.ThresholdLow == '')
+        data.ThresholdLow = null;
 
-//       if ((await dataModel.insert(data)).affectedRows != 1) {
-//         data.errors = [];
-//         data.errors.push({
-//           value: '',
-//           msg: 'Unable to post the record',
-//           param: 'form',
-//           location: 'body'
-//         });
+      if (data.ThresholdHigh == '')
+        data.ThresholdHigh = null;
 
-//         return res.render(routeAddress + pageAddress, 
-//           { title: generalFunctions.getTitle(routeTitle, pageTitle), 
-//             brand: pageBrand, 
-//             navMenu: navMenu, model: data});
-//       }
-//       res.redirect('/' + routeAddress);
-// });
+      if (data.TrueProcessID == '')
+        data.TrueProcessID = null;
+
+      if (data.FalseProcessID == '')
+        data.FalseProcessID = null;
+
+      if (data.ActionType == 'true')
+        data.ActionType = true;
+      else
+        data.ActionType = false;
+
+      console.log(data);
+      data.form = {new: 'new', action: '/' + routeAddress };
+      
+      // Validation
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        data.errors = errors.array();
+        return res.render(routeAddress + pageAddress, 
+            { title: generalFunctions.getTitle(routeTitle, pageTitle), 
+              brand: pageBrand, 
+              navMenu: navMenu, model: data });
+      }
+
+      if ((await dataModel.insert(data)).affectedRows != 1) {
+        data.errors = [];
+        data.errors.push({
+          value: '',
+          msg: 'Unable to post the record',
+          param: 'form',
+          location: 'body'
+        });
+
+        return res.render(routeAddress + pageAddress, 
+          { title: generalFunctions.getTitle(routeTitle, pageTitle), 
+            brand: pageBrand, 
+            navMenu: navMenu, model: data});
+      }
+      res.redirect('/tasks/details' + data.TaskID);
+});
 
 // // Edit - Get
 // router.get('/edit/:id', async (req, res) => {

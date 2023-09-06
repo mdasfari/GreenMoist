@@ -35,7 +35,7 @@ router.get('/details/:id', async (req, res) => {
   let pageModel = await dataModel.findByID([req.params.id]);
   if (!pageModel)
     return;
-  pageModel.Items = await itemsModel.findByTaskID([pageModel.TaskID]);
+  pageModel.items = await itemsModel.findAllByTaskID(pageModel.TaskID);
 
   res.render(routeAddress  + pageAddress, 
     { title: generalFunctions.getTitle(routeTitle, pageTitle), 
