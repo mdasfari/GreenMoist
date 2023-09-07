@@ -13,3 +13,10 @@ a {
 main {
   padding: 15px;
 }
+
+.ActionButtons {
+  margin-top: 15px;
+  padding-top: 15px;
+
+  border-top: 2px solid lightgray;
+}

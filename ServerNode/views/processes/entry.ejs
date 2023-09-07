@@ -34,8 +34,8 @@
                                 <select class="form-select" id="ProcessType" name="ProcessType" value="<%=model.ProcessType%>">
                                     <option value="">{Select a type}</option>
                                     <option value="0">Status</option>
-                                    <option value="">Action</option>
-                                    <option value="">Record</option>
+                                    <option value="1">Action</option>
+                                    <option value="2">Record</option>
                                 </select>
                             </div>
                         </div>
@@ -94,13 +94,13 @@
                             </div>
                             <div class="col-md-2">
                                 <div class="form-check form-switch mt-3">
-                                    <input class="form-check-input" id="SerialOutRawData" name="SerialOutRawData" type="checkbox" />
+                                    <input class="form-check-input" id="SerialOutRawData" name="SerialOutRawData" type="checkbox" <% if(model.SerialOutRawData) {%>checked<%}%> />
                                     <label class="form-check-label" for="SerialOutRawData">Debug Print</label>
                                 </div>
                             </div>
                             <div class="col-md-2">
                                 <div class="form-check form-switch mt-3">
-                                    <input class="form-check-input" id="BroadcastValue" name="BroadcastValue" type="checkbox" />
+                                    <input class="form-check-input" id="BroadcastValue" name="BroadcastValue" type="checkbox" <% if(model.BroadcastValue) {%>checked<%}%> />
                                     <label class="form-check-label" for="BroadcastValue">Broadcast Value</label>
                                 </div>
                             </div>
@@ -121,11 +121,10 @@
                                     <input class="form-control" id="ThresholdHigh" name="ThresholdHigh" type="text" placeholder="High" value="<%=model.ThresholdHigh%>" />
                                 </div>
                             </div>
-                            </div>
-                            <div class="card-body">
-                            <div class="row mt-2">
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
                                 <div class="col-md-6">
-
                                     <div class="card bg-success text-bg-success">
                                         <div class="card-body">
                                             <label class="form-label" for="TrueProcessType">Within the threshold</label>
@@ -133,14 +132,21 @@
                                                         name="TrueProcessType" 
                                                         value="<%=model.TrueProcessType%>"
                                                         data-item-values="2"
-                                                        data-item-id="TrueProcessID"
+                                                        data-item-id="TrueProcessSerialObject"
                                                         onchange="OnChangeDisplay(this, 'd-none')">
                                                 <option value="0">Loop</option>
                                                 <option value="1">Next Process</option>
                                                 <option value="2">Go to Process Serial</option>
                                                 <option value="3">Exit</option>
                                             </select>
-                                            <input class="form-control d-none mt-2" id="TrueProcessID" name="TrueProcessID" placeholder="Process Serial" value="<%=model.TrueProcessID%>" />
+                                            <div class="mt-2 d-none" id="TrueProcessSerialObject">
+                                                <label class="form-label" for="TrueProcessID">Process Serial</label>
+                                                <input class="form-control" id="TrueProcessID" name="TrueProcessID" placeholder="Process Serial" value="<%=model.TrueProcessID%>" />
+                                            </div>
+                                            <div class="mt-2">
+                                                <label class="form-label" for="TrueDebugMessage">Debug Message</label>
+                                                <input class="form-control" id="TrueDebugMessage" name="TrueDebugMessage" placeholder="Debug Message" value="<%=model.TrueDebugMessage%>" />
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -152,14 +158,21 @@
                                                         name="FalseProcessType" 
                                                         value="<%=model.FalseProcessType%>"
                                                         data-item-values="2"
-                                                        data-item-id="FalseProcessID"
+                                                        data-item-id="FalseProcessSerialObject"
                                                         onchange="OnChangeDisplay(this, 'd-none')">
                                                 <option value="0">Loop</option>
                                                 <option value="1">Next Process</option>
                                                 <option value="2">Go to Process Serial</option>
                                                 <option value="3">Exit</option>
                                             </select>
-                                            <input class="form-control d-none mt-2" id="FalseProcessID" name="FalseProcessID" placeholder="Process Serial" value="<%=model.FalseProcessID%>" />
+                                            <div class="mt-2 d-none" id="FalseProcessSerialObject">
+                                                <label class="form-label" for="FalseProcessID">Process Serial</label>
+                                                <input class="form-control" id="FalseProcessID" name="FalseProcessID" placeholder="Process Serial" value="<%=model.FalseProcessID%>" />
+                                            </div>
+                                            <div class="mt-2">
+                                                <label class="form-label" for="FalseDebugMessage">Debug Message</label>
+                                                <input class="form-control" id="FalseDebugMessage" name="FalseDebugMessage" placeholder="Debug Message" value="<%=model.FalseDebugMessage%>" />
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -199,5 +212,13 @@
         </footer>
     </div>
     <%- include('../_shared/_scripts'); %>
+    <script>
+        selectOption('ProcessType', <%=model.ProcessType%>);
+        selectOption('Pin', <%=model.Pin%>);
+        selectOption('PinType', <%=model.PinType%>);
+        selectOption('TrueProcessType', <%=model.TrueProcessType%>);
+        selectOption('FalseProcessType', <%=model.FalseProcessType%>);
+        selectOption('ActionType', <%=model.ActionType%>);
+    </script>
 </body>
 </html>

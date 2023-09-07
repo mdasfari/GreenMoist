@@ -12,3 +12,11 @@ function OnChangeDisplay(control, className)
         });
     }
 }
+
+function selectOption(selectID, value) {
+    const selectElement = document.getElementById(selectID);
+    if (selectElement)
+    {
+        selectElement.value = value;
+    }
+}

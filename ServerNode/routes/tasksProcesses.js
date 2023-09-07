@@ -23,7 +23,14 @@ router.get('/details/:id', async (req, res) => {
   let pageModel = await dataModel.findByID([req.params.id]);
   if (!pageModel)
     return;
-  pageModel.Items = await itemsModel.findByTaskID([pageModel.TaskID]);
+  
+  // Add Displays
+  pageModel.ProcessTypeDisplay = generalFunctions.getProcessTypeDisplay(pageModel.ProcessType);
+  pageModel.PinDisplay = generalFunctions.getPinDisplay(pageModel.Pin);
+  pageModel.PinTypeDisplay = generalFunctions.getPinTypeDisplay(pageModel.PinType);
+  pageModel.TrueProcessTypeDisplay = generalFunctions.getProcessWorkflowDisplay(pageModel.TrueProcessType);
+  pageModel.FalseProcessTypeDisplay = generalFunctions.getProcessWorkflowDisplay(pageModel.FalseProcessType);
+  pageModel.ActionTypeDisplay = generalFunctions.getExecutionDisplay(pageModel.ActionType);
 
   res.render(routeAddress  + pageAddress, 
     { title: generalFunctions.getTitle(routeTitle, pageTitle), 
@@ -55,49 +62,12 @@ router.post('/new/:taskID'
       pageTitle = "New";
       pageAddress = '/entry';
 
-      let data = req.body;
-      if (!data.TaskId)
-        data.TaskID = req.params.taskID
-  
-      if (data.Pin == '')
-        data.Pin = null;
-  
-      if (data.PinType == '')
-        data.PinType = null;
-
-      if (data.SerialOutRawData == 'on')
-        data.SerialOutRawData = true;
-      else
-        data.SerialOutRawData = false;
-      
-      if (data.BroadcastValue == 'on')
-        data.BroadcastValue = true;
-      else
-        data.BroadcastValue = false;
-    
-      if (data.ThresholdLow == '')
-        data.ThresholdLow = null;
-
-      if (data.ThresholdHigh == '')
-        data.ThresholdHigh = null;
-
-      if (data.TrueProcessID == '')
-        data.TrueProcessID = null;
-
-      if (data.FalseProcessID == '')
-        data.FalseProcessID = null;
-
-      if (data.ActionType == 'true')
-        data.ActionType = true;
-      else
-        data.ActionType = false;
-
-      console.log(data);
-      data.form = {new: 'new', action: '/' + routeAddress };
+      let data = dataModel.normalizeForm(req.body, req.params.taskID);
       
       // Validation
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
+        data.form = {new: 'new', action: '/tasks/processes/new/' + req.params.taskID };
         data.errors = errors.array();
         return res.render(routeAddress + pageAddress, 
             { title: generalFunctions.getTitle(routeTitle, pageTitle), 
@@ -114,81 +84,85 @@ router.post('/new/:taskID'
           location: 'body'
         });
 
+        data.form = {new: 'new', action: '/tasks/processes/new/' + req.params.taskID };
         return res.render(routeAddress + pageAddress, 
           { title: generalFunctions.getTitle(routeTitle, pageTitle), 
             brand: pageBrand, 
             navMenu: navMenu, model: data});
       }
-      res.redirect('/tasks/details' + data.TaskID);
+      res.redirect('/tasks/details/' + data.TaskID);
 });
 
-// // Edit - Get
-// router.get('/edit/:id', async (req, res) => {
-//   pageTitle = "Edit";
-//   pageAddress = '/edit';
+// Edit - Get
+router.get('/edit/:id', async (req, res) => {
+  pageTitle = "Edit";
+  pageAddress = '/entry';
   
-//   let data = await dataModel.findByID([req.params.id]);
-//   data.form = {edit: 'edit', action: '/' + routeAddress + pageAddress};
+  let data = await dataModel.findByID([req.params.id]);
+  data.form = {edit: 'edit', action: '/tasks/processes/edit'};
 
-//   res.render(routeAddress + '/entry', 
-//     { title: generalFunctions.getTitle(routeTitle, pageTitle), 
-//       brand: pageBrand, 
-//       navMenu: navMenu, 
-//       model: data});
-// });
+  res.render(routeAddress + pageAddress, 
+    { title: generalFunctions.getTitle(routeTitle, pageTitle), 
+      brand: pageBrand, 
+      navMenu: navMenu, 
+      model: data});
+});
 
-// // Edit - Post
-// router.post('/edit'
-//   , body('Name').not().isEmpty().withMessage('Name is required')
-//     .isLength({max: 100}).withMessage('Maximum Length is 100').trim().escape()
-//   , async (req, res) => {
+// Edit - Post
+router.post('/edit'
+  , body('Name').not().isEmpty().withMessage('Name is required')
+    .isLength({max: 100}).withMessage('Maximum Length is 100').trim().escape()
+  , async (req, res) => {
 
-//   pageTitle = "Edit";
-//   pageAddress = "/edit";
+  pageTitle = "Edit";
+  pageAddress = "/entry";
 
-//   let data = req.body;
-//   data.form = {edit: 'edit', action: '/' + routeAddress + pageAddress
-//   };
+  let data = dataModel.normalizeForm(req.body);
+  console.log(data);
 
-//   // Validation
-//   const errors = validationResult(req);
-//   if (!errors.isEmpty()) {
-//     data.errors = errors.array();
-//     return res.render(routeAddress + pageAddress, 
-//     { title: generalFunctions.getTitle(routeTitle, pageTitle), 
-//       brand: pageBrand, 
-//       navMenu: navMenu, model: data});
-//   }
+  // Validation
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    console.log("Error");
+    data.errors = errors.array();
+    data.form = {edit: 'edit', action: '/tasks/processes/edit/'};
+    return res.render(routeAddress + pageAddress, 
+    { title: generalFunctions.getTitle(routeTitle, pageTitle), 
+      brand: pageBrand, 
+      navMenu: navMenu, model: data});
+  }
 
-//   if ((await dataModel.update(data)).affectedRows != 1) {
-//     data.errors = [];
-//         data.errors.push({
-//           value: '',
-//           msg: 'Unable to update the record',
-//           param: 'form',
-//           location: 'body'
-//         });
-
-//     return res.render(routeAddress + pageAddress, 
-//       { title: generalFunctions.getTitle(routeTitle, pageTitle), 
-//         brand: pageBrand, 
-//         navMenu: navMenu, 
-//         model: data});
-//   }
-//   res.redirect('/' + routeAddress);
-// });
+  if ((await dataModel.update(data)).affectedRows != 1) {
+    console.log("Cannot update");
+    data.errors = [];
+        data.errors.push({
+          value: '',
+          msg: 'Unable to update the record',
+          param: 'form',
+          location: 'body'
+        });
+    data.form = {edit: 'edit', action: '/tasks/processes/edit/'};
+    return res.render(routeAddress + pageAddress, 
+      { title: generalFunctions.getTitle(routeTitle, pageTitle), 
+        brand: pageBrand, 
+        navMenu: navMenu, 
+        model: data});
+  }
+  console.log("Updated");
+  res.redirect('/tasks/details/' + data.TaskID);
+});
 
 // // Delete
-// router.delete('/' , async (req, res) => {
-//   /* the following is a bug in the code. since the insertedID is a natrural number,
-//   * stringify cannot handle BigInt and alos for security resones I should not return 
-//   * the database to the front end app. the following changed from now on
-//   * return res.send(await users.delete(req.body.RecordID));
-//   */
-//   let result = await dataModel.delete(req.body.RecordID);
-//   let stringifyed = JSON.stringify({
-//     affectedRows: result.affectedRows, warningStatus: result.warningStatus});
-//   return res.send(stringifyed);
-// });
+router.delete('/' , async (req, res) => {
+  /* the following is a bug in the code. since the insertedID is a natrural number,
+  * stringify cannot handle BigInt and alos for security resones I should not return 
+  * the database to the front end app. the following changed from now on
+  * return res.send(await users.delete(req.body.RecordID));
+  */
+  let result = await dataModel.delete(req.body.RecordID);
+  let stringifyed = JSON.stringify({
+    affectedRows: result.affectedRows, warningStatus: result.warningStatus});
+  return res.send(stringifyed);
+});
 
 module.exports = router;

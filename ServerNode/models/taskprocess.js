@@ -15,13 +15,63 @@ module.exports = {
 	, ThresholdHigh: null
 	, TrueProcessType: null
     , TrueProcessID: null
+    , TrueDebugMessage: null
 	, FalseProcessType: null
     , FalseProcessID: null
+    , FalseDebugMessage: null
     , ActionType: null
 };
 
-// ProcessID, TaskID, ProcessSerial, ProcessType, Name, Pin, PinType, SerialOutRawData, BroadcastValue, ThresholdLow, ThresholdHigh, TrueProcessType, TrueProcessID, FalseProcessType, FalseProcessID, ActionType
-module.exports.create = function create(processID, taskID, processSerial, processType, name, pin, pinType, serialOutRawData, broadcastValue, thresholdLow, thresholdHigh, trueProcessType, trueProcessID, falseProcessType, falseProcessID, actionType) {
+module.exports.normalizeForm = function normalizeForm(bodyForm, taskID) {
+    let data = bodyForm;
+
+    if (!bodyForm.TaskId && taskID)
+        data.TaskID = taskID
+
+    if (bodyForm.Pin == '')
+        data.Pin = null;
+
+    if (bodyForm.PinType == '')
+        data.PinType = null;
+
+    if (bodyForm.SerialOutRawData == 'on')
+        data.SerialOutRawData = true;
+    else
+        data.SerialOutRawData = false;
+
+    if (bodyForm.BroadcastValue == 'on')
+        data.BroadcastValue = true;
+    else
+        data.BroadcastValue = false;
+
+    if (bodyForm.ThresholdLow == '')
+        data.ThresholdLow = null;
+
+    if (bodyForm.ThresholdHigh == '')
+        data.ThresholdHigh = null;
+
+    if (bodyForm.TrueProcessID == '')
+        data.TrueProcessID = null;
+    
+    if (bodyForm.TrueDebugMessage == '')
+        data.TrueDebugMessage = null;
+
+    if (bodyForm.FalseProcessID == '')
+        data.FalseProcessID = null;
+
+    if (bodyForm.FalseDebugMessage == '')
+        data.FalseDebugMessage = null;
+
+    if (bodyForm.ActionType == 'true')
+        data.ActionType = true;
+    else
+        data.ActionType = false;
+
+        return data;
+}
+
+// ProcessID, TaskID, ProcessSerial, ProcessType, Name, Pin, PinType, SerialOutRawData, BroadcastValue, ThresholdLow, ThresholdHigh, TrueProcessType, TrueProcessID, TrueDebugMessage, FalseProcessType, FalseProcessID, FalseDebugMessage, ActionType
+module.exports.create = function create(processID, taskID, processSerial, processType, name, pin, pinType, serialOutRawData, broadcastValue, thresholdLow, thresholdHigh, trueProcessType, trueProcessID, trueDebugMessage, falseProcessType, falseProcessID, falseDebugMessage, actionType) {
     return {
         ProcessID: processID
         , TaskID: taskID
@@ -37,8 +87,10 @@ module.exports.create = function create(processID, taskID, processSerial, proces
         , ThresholdHigh: thresholdHigh
         , TrueProcessType: trueProcessType
         , TrueProcessID: trueProcessID
+        , TrueDebugMessage: trueDebugMessage
         , FalseProcessType: falseProcessType
         , FalseProcessID: falseProcessID
+        , FalseDebugMessage: falseDebugMessage
         , ActionType: actionType
     }
 };
@@ -66,7 +118,7 @@ module.exports.findByID = async function findByID(processID) {
             return this.create(result[0].ProcessID, result[0].TaskID, result[0].ProcessSerial, result[0].ProcessType
                 , result[0].Name, result[0].Pin, result[0].PinType, result[0].SerialOutRawData, result[0].BroadcastValue
                 , result[0].ThresholdLow, result[0].ThresholdHigh
-                , result[0].TrueProcessType, result[0].TrueProcessID, result[0].FalseProcessType, result[0].FalseProcessID
+                , result[0].TrueProcessType, result[0].TrueProcessID, result[0].TrueDebugMessage, result[0].FalseProcessType, result[0].FalseProcessID, result[0].FalseDebugMessage
                 , result[0].ActionType);
         }
     } catch (err) {
@@ -76,7 +128,7 @@ module.exports.findByID = async function findByID(processID) {
 
 module.exports.insert = async function insert(taskProcess) {
     try {
-        return await mdb.pool.query("insert into taskprocesses (TaskID, ProcessSerial, ProcessType, Name, Pin, PinType, SerialOutRawData, BroadcastValue, ThresholdLow, ThresholdHigh, TrueProcessType, TrueProcessID, FalseProcessType, FalseProcessID, ActionType) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", [taskProcess.TaskID, taskProcess.ProcessSerial, taskProcess.ProcessType, taskProcess.Name, taskProcess.Pin, taskProcess.PinType, taskProcess.SerialOutRawData, taskProcess.BroadcastValue, taskProcess.ThresholdLow, taskProcess.ThresholdHigh, taskProcess.TrueProcessType, taskProcess.TrueProcessID, taskProcess.FalseProcessType, taskProcess.FalseProcessID, taskProcess.ActionType]);
+        return await mdb.pool.query("insert into taskprocesses (TaskID, ProcessSerial, ProcessType, Name, Pin, PinType, SerialOutRawData, BroadcastValue, ThresholdLow, ThresholdHigh, TrueProcessType, TrueProcessID, TrueDebugMessage, FalseProcessType, FalseProcessID, FalseDebugMessage, ActionType) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", [taskProcess.TaskID, taskProcess.ProcessSerial, taskProcess.ProcessType, taskProcess.Name, taskProcess.Pin, taskProcess.PinType, taskProcess.SerialOutRawData, taskProcess.BroadcastValue, taskProcess.ThresholdLow, taskProcess.ThresholdHigh, taskProcess.TrueProcessType, taskProcess.TrueProcessID, taskProcess.TrueDebugMessage, taskProcess.FalseProcessType, taskProcess.FalseProcessID, taskProcess.FalseDebugMessage, taskProcess.ActionType]);
     } catch (err) {
         throw err;
     }
@@ -84,7 +136,7 @@ module.exports.insert = async function insert(taskProcess) {
 
 module.exports.update = async function update(taskProcess) {
     try {
-        return await mdb.pool.query("Update taskprocesses set ProcessSerial = ?, ProcessType = ?, Name = ?, Pin = ?, PinType = ?, SerialOutRawData = ?, BroadcastValue = ?, ThresholdLow = ?, ThresholdHigh = ?, TrueProcessType = ?, TrueProcessID = ?, FalseProcessType = ?, FalseProcessID = ?, ActionType = ? where processid = ?", [taskProcess.processSerial, taskProcess.processType, taskProcess.name, taskProcess.pin, taskProcess.pinType, taskProcess.serialOutRawData, taskProcess.broadcastValue, taskProcess.thresholdLow, taskProcess.thresholdHigh, taskProcess.trueProcessType, taskProcess.trueProcessID, taskProcess.falseProcessType, taskProcess.falseProcessID, taskProcess.actionType, taskProcess.processID]);
+        return await mdb.pool.query("Update taskprocesses set ProcessSerial = ?, ProcessType = ?, Name = ?, Pin = ?, PinType = ?, SerialOutRawData = ?, BroadcastValue = ?, ThresholdLow = ?, ThresholdHigh = ?, TrueProcessType = ?, TrueProcessID = ?, TrueDebugMessage = ?, FalseProcessType = ?, FalseProcessID = ?, FalseDebugMessage = ?, ActionType = ? where processid = ?", [taskProcess.processSerial, taskProcess.processType, taskProcess.name, taskProcess.pin, taskProcess.pinType, taskProcess.serialOutRawData, taskProcess.broadcastValue, taskProcess.thresholdLow, taskProcess.thresholdHigh, taskProcess.trueProcessType, taskProcess.trueProcessID, taskProcess.TrueDebugMessage, taskProcess.falseProcessType, taskProcess.falseProcessID, taskProcess.FalseDebugMessage, taskProcess.actionType, taskProcess.processID]);
     } catch (err) {
         throw err;
     }
