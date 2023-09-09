@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const navMenu = require('../routes/_navigation');
-//const dataModel = require('../models/task');
 const dataModel = require('../models/taskProcess');
 
 // Validator
@@ -118,8 +117,6 @@ router.post('/edit'
   pageAddress = "/entry";
 
   let data = dataModel.normalizeForm(req.body);
-  console.log(data);
-
   // Validation
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -132,23 +129,29 @@ router.post('/edit'
       navMenu: navMenu, model: data});
   }
 
-  if ((await dataModel.update(data)).affectedRows != 1) {
-    console.log("Cannot update");
-    data.errors = [];
-        data.errors.push({
-          value: '',
-          msg: 'Unable to update the record',
-          param: 'form',
-          location: 'body'
-        });
-    data.form = {edit: 'edit', action: '/tasks/processes/edit/'};
-    return res.render(routeAddress + pageAddress, 
-      { title: generalFunctions.getTitle(routeTitle, pageTitle), 
-        brand: pageBrand, 
-        navMenu: navMenu, 
-        model: data});
+  console.log(data);
+  let dbResult = await dataModel.update(data);
+  console.log("Db Reuslt: ", dbResult);
+  if (dbResult)
+  {
+    if (dbResult.affectedRows != 1) {
+      data.errors = [];
+          data.errors.push({
+            value: '',
+            msg: 'Unable to update the record',
+            param: 'form',
+            location: 'body'
+          });
+      data.form = {edit: 'edit', action: '/tasks/processes/edit/'};
+      return res.render(routeAddress + pageAddress, 
+        { title: generalFunctions.getTitle(routeTitle, pageTitle), 
+          brand: pageBrand, 
+          navMenu: navMenu, 
+          model: data});
+    }
+    console.log("Updated");
   }
-  console.log("Updated");
+
   res.redirect('/tasks/details/' + data.TaskID);
 });
 

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('../_shared/_head', title); %>
+</head>
+<body>
+    <div class="mainGrid">
+        <header>
+            <%- include('../_shared/_navigator', brand, navMenu); %>
+        </header>
+        <main>
+            <h3><%=title%></h3>
+            <!-- Body Start here -->
+            
+            <div class="list-group">
+                <% model.bles.forEach((ble)=>{ %>
+                    <a href="#" class="list-group-item list-group-item-action"><%=ble%>></a>
+                <% }); %>
+              </div>
+            <!-- Body End here -->
+        </main>
+        <footer>
+            <%- include('../_shared/_footer'); %>
+        </footer>
+    </div>
+    <%- include('../_shared/_scripts'); %>
+</body>
+</html>

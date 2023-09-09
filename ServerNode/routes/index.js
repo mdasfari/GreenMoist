@@ -2,9 +2,11 @@ const express = require('express');
 const router = express.Router();
 const navMenu = require('./_navigation');
 let pageInformation = require('../models/pageInformation');
+const device = require('../models/device');
+const task = require('../models/task');
 
 /* GET home page. */
-router.get('/', function(req, res, next) {
+router.get('/', async function(req, res, next) {
   console.log('ENV_MODE: ', process.env.ENV_MODE);
 
   console.log('APP_ID: ', process.env.APP_ID);
@@ -22,7 +24,11 @@ router.get('/', function(req, res, next) {
   pageInformation.brand = process.env.APP_NAME;
   pageInformation.route = "Home Page";
   
-  res.render('index', { title: pageInformation.title(), brand: pageInformation.brand, navMenu: navMenu});
+  let dataModel = {};
+  dataModel.devices = await device.findAll();
+  dataModel.tasks = await task.findAll();
+
+  res.render('index', { title: pageInformation.title(), brand: pageInformation.brand, navMenu: navMenu, model: dataModel});
 });
 
 module.exports = router;

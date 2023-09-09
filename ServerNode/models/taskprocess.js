@@ -136,10 +136,17 @@ module.exports.insert = async function insert(taskProcess) {
 
 module.exports.update = async function update(taskProcess) {
     try {
-        return await mdb.pool.query("Update taskprocesses set ProcessSerial = ?, ProcessType = ?, Name = ?, Pin = ?, PinType = ?, SerialOutRawData = ?, BroadcastValue = ?, ThresholdLow = ?, ThresholdHigh = ?, TrueProcessType = ?, TrueProcessID = ?, TrueDebugMessage = ?, FalseProcessType = ?, FalseProcessID = ?, FalseDebugMessage = ?, ActionType = ? where processid = ?", [taskProcess.processSerial, taskProcess.processType, taskProcess.name, taskProcess.pin, taskProcess.pinType, taskProcess.serialOutRawData, taskProcess.broadcastValue, taskProcess.thresholdLow, taskProcess.thresholdHigh, taskProcess.trueProcessType, taskProcess.trueProcessID, taskProcess.TrueDebugMessage, taskProcess.falseProcessType, taskProcess.falseProcessID, taskProcess.FalseDebugMessage, taskProcess.actionType, taskProcess.processID]);
-    } catch (err) {
-        throw err;
-    }
+        return await mdb.pool.query(`Update taskprocesses set ProcessSerial = ?, ProcessType = ?, Name = ?, Pin = ?, PinType = ?, SerialOutRawData = ?
+            , BroadcastValue = ?, ThresholdLow = ?, ThresholdHigh = ?, TrueProcessType = ?, TrueProcessID = ?, TrueDebugMessage = ?
+            , FalseProcessType = ?, FalseProcessID = ?, FalseDebugMessage = ?, ActionType = ? where processid = ?`
+            , [taskProcess.ProcessSerial, taskProcess.ProcessType, taskProcess.Name, taskProcess.Pin, taskProcess.PinType
+                , taskProcess.SerialOutRawData, taskProcess.BroadcastValue, taskProcess.ThresholdLow, taskProcess.ThresholdHigh
+                , taskProcess.TrueProcessType, taskProcess.TrueProcessID, taskProcess.TrueDebugMessage
+                , taskProcess.FalseProcessType, taskProcess.FalseProcessID, taskProcess.FalseDebugMessage
+                , taskProcess.ActionType, taskProcess.ProcessID]);
+        } catch (err) {
+            throw err;
+        }
 };
 
 module.exports.delete = async function deleteRecord(processID) {

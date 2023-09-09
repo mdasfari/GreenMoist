@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('../_shared/_head', title); %>
+</head>
+<body>
+    <div class="mainGrid">
+        <header>
+            <%- include('../_shared/_navigator', brand, navMenu); %>
+        </header>
+        <main>
+            <!-- Body Start here -->
+            <div class="container">
+                <form action="<%=model.form.action%>" method="POST">
+                    <% if(model.form.edit) { %>
+                        <input name="TaskID" type="hidden" value="<%=model.TaskID%>" />
+                    <% } %>
+                    <label for="Name" class="form-label">Name</label>
+                    <input id="Name" class="form-control" type="text" placeholder="Name" name="Name" value="<%=model.Name%>" />
+                    <% if (model.errors) { 
+                        model.errors.forEach(function(error) {
+                            if(error.path == 'Name') { %>
+                                <div class="form-text text-danger"><%=error.msg%></div>
+                    <%      }
+                        });
+                    } %>
+                    <hr />
+                    <button type="submit" class="btn btn-success">Submit</button>
+                    <a href="/tasks" class="btn btn-secondary">Cancel</a>
+                </form>
+            </div>
+            <!-- Body End here -->
+        </main>
+        <footer>
+            <%- include('../_shared/_footer'); %>
+        </footer>
+    </div>
+    <%- include('../_shared/_scripts'); %>
+</body>
+</html>

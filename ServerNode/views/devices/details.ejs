@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('../_shared/_head', title); %>
+    <link rel="stylesheet" href="/lib/swal/sweetalert2.min.css" type="text/css" />
+</head>
+<body>
+    <div class="mainGrid">
+        <header>
+            <%- include('../_shared/_navigator', brand, navMenu); %>
+        </header>
+        <main>
+            <!-- Body Start here -->
+            <div class="container">
+                <!-- Task -->
+                <h3>Information</h3>
+                <div class="form-container">
+                    <label for="Name" class="form-label">Name</label>
+                    <input type="text" class="form-control" value="<%=model.Name%>" readonly />
+                    <hr />
+                    <a class="btn btn-warning" href="/devices/edit/<%=model.DeviceID%>">Edit</a>
+                    <button id="deleteButton" type="button" class="btn btn-danger" onclick="deleteRecord('/devices', <%=model.DeviceID%>, '<%=model.Name%>', '/devices')">Delete</button>
+                    <a class="btn btn-secondary" href="/devices">Return</a>
+                    <hr/>
+                    <form method="post" action="/devices/sendTask">
+                        <input type="hidden" id="DeviceID" name="DeviceID" value="<%=model.DeviceID%>" />
+                        <label class="form-label" for="TaskID">Send Task</label>
+                        <select class="form-select" id="TaskID" name="TaskID">
+                            <option value="" selected="selected">{Select a task}</option>
+                            <% if(model.tasks) { model.tasks.forEach((task)=>{ %>
+                                <option value="<%=task.TaskID%>"><%=task.Name%></option>
+                            <% }); }%>
+                        </select>
+                        <input class="btn btn-danger mt-2" type="submit" />
+                    </form>
+                </div>
+                <!-- /Task -->
+            </div>
+            <!-- Body End here -->
+        </main>
+        <footer>
+            <%- include('../_shared/_footer'); %>
+        </footer>
+    </div>
+    <%- include('../_shared/_scripts'); %>
+    <script src="/lib/swal/sweetalert2.min.js" type="text/javascript"></script>
+    <script src="/javascripts/crud.js" type="text/javascript"></script>
+</body>
+</html>
+

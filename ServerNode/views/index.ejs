@@ -17,9 +17,19 @@
                         <div class="card-header text-bg-primary">
                             Connected Devices
                         </div>
-                        <div class="card-body">
-                            <h3 class="card-title">Number if Devices</h3>
-                            <p class="card-text">4 devices</p>
+                        <div class="">
+                            <div class="list-group list-group-flush">
+                                <% if (model.devices) { %>
+                                    <% model.devices.forEach((device)=>{%>
+                                        <a href="/devices/details/<%=device.DeviceID%>" class="list-group-item list-group-item-action" aria-current="true"><%=device.Name%></a>
+                                    <%});%>
+                                <%} else{%>
+                                    <a class="list-group-item list-group-item-action disabled" aria-disabled="true">no device found</a>
+                                <%}%>
+                              </div>
+                        </div>
+                        <div class="card-footer bg-light">
+                            <span class="card-title">Total Devices</span>
                         </div>
                     </div>
                 </div>
@@ -27,6 +37,20 @@
                     <div class="card">
                         <div class="card-header text-bg-danger">
                             Tasks
+                        </div>
+                        <div class="">
+                            <div class="list-group list-group-flush">
+                                <% if (model.tasks) { %>
+                                    <% model.tasks.forEach((task)=>{%>
+                                        <a href="/tasks/details/<%=task.TaskID%>" class="list-group-item list-group-item-action" aria-current="true"><%=task.Name%></a>
+                                    <%});%>
+                                <%} else{%>
+                                    <a class="list-group-item list-group-item-action disabled" aria-disabled="true">no device found</a>
+                                <%}%>
+                              </div>
+                        </div>
+                        <div class="card-footer">
+
                         </div>
                     </div>
                 </div>

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('../_shared/_head', title); %>
+</head>
+<body>
+    <div class="mainGrid">
+        <header>
+            <%- include('../_shared/_navigator', brand, navMenu); %>
+        </header>
+        <main>
+            <h3><%=title%></h3>
+            <!-- Body Start here -->
+            <div class="tableContainer">
+                <table class="table table-striped indexTable">
+                    <colgroup>
+                        <col style="width:10px;" />
+                        <col style="width:98%;" />
+                    </colgroup>
+                    <thead>
+                        <tr>
+                            <td colspan="2">
+                                <a href="/devices/new" class="linkbutton">New</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>#</th>
+                            <th>Name</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% model.forEach(function(record) { %>
+                            <tr>
+                                <td></td>
+                                <td><a href="/devices/details/<%= record.DeviceID %>"><%= record.Name %></a></td>
+                            </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
+            </div>
+            <!-- Body End here -->
+        </main>
+        <footer>
+            <%- include('../_shared/_footer'); %>
+        </footer>
+    </div>
+    <%- include('../_shared/_scripts'); %>
+</body>
+</html>

@@ -193,13 +193,15 @@
                             </div>
                         </div>
                     </div>
-                    <% if (model.errors) { 
-                        model.errors.forEach(function(error) {
-                            if(error.path == 'Name') { %>
-                                <div class="form-text text-danger"><%=error.msg%></div>
-                    <%      }
-                        });
-                    } %>
+                    <% if (model.errors) { %>
+                        <div class="form-text fs-4 text-danger">
+                            <ul>
+                            <% model.errors.forEach(function(error) { %>
+                                <li><%=error.msg%></li>
+                            <% }); %>
+                            </ul>
+                        </div>
+                    <% } %>
                     <hr />
                     <button type="submit" class="btn btn-success">Submit</button>
                     <a href="/tasks/details/<%=model.TaskID%>" class="btn btn-secondary">Cancel</a>
