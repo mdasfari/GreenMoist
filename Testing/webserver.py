@@ -6,8 +6,11 @@ from machine import Pin
 
 led = Pin(15, Pin.OUT)
 
-ssid = 'Al-Faisal'
-password = 'c1tyt@qa'
+# ssid = 'Al-Faisal'
+# password = 'c1tyt@qa'
+
+ssid = 'LowZoneGamma'
+password = 'WKV@62YQJG$7'
 
 wlan = network.WLAN(network.STA_IF)
 wlan.active(True)
@@ -49,6 +52,9 @@ while True:
     try:
         cl, addr = s.accept()
         print('client connected from', addr)
+        
+        print('client connected from', cl)
+        
         request = cl.recv(1024)
         print(request)
 
