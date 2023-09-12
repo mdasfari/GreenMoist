@@ -6,23 +6,19 @@ from machine import Pin
 
 led = Pin(15, Pin.OUT)
 
-# ssid = 'Al-Faisal'
-# password = 'c1tyt@qa'
+ssid = 'Al-Faisal'
+password = 'c1tyt@qa'
 
-ssid = 'LowZoneGamma'
-password = 'WKV@62YQJG$7'
+# ssid = 'LowZoneGamma'
+# password = 'WKV@62YQJG$7'
 
 wlan = network.WLAN(network.STA_IF)
 wlan.active(True)
 wlan.connect(ssid, password)
 
-f = open('index.html', 'r')
-
-html = f.read()
-
-print(html);
-
-f.close()
+#f = open('index.html', 'r')
+#html = f.read()
+#f.close()
 
 max_wait = 10
 while max_wait > 0:
@@ -47,38 +43,40 @@ s.listen(1)
 
 print('listening on', addr)
 
+html = """<!DOCTYPE html>
+<html>
+    <head> <title>Pico W</title> </head>
+    <body> <h1>Pico W</h1>
+        <p>%s</p>
+    </body>
+</html>
+"""
+
 # Listen for connections
 while True:
     try:
+        requestData = ''
         cl, addr = s.accept()
         print('client connected from', addr)
         
-        print('client connected from', cl)
+        while True:
+            request = cl.recv(1024).decode()
+            
+            if not request:
+                break;
+            else:
+                requestData = requestData + request
+            
+        print(requestData)
         
-        request = cl.recv(1024)
-        print(request)
 
-        request = str(request)
-        led_on = request.find('/light/on')
-        led_off = request.find('/light/off')
-        print( 'led on = ' + str(led_on))
-        print( 'led off = ' + str(led_off))
-
-        if led_on == 6:
-            print("led on")
-            led.value(1)
-            stateis = "LED is ON"
-
-        if led_off == 6:
-            print("led off")
-            led.value(0)
-            stateis = "LED is OFF"
-
-        response = html # % stateis
+        response = html
+        #print(response)
 
         cl.send('HTTP/1.0 200 OK\r\nContent-type: text/html\r\n\r\n')
         cl.send(response)
         cl.close()
+        print("Connection Closed")
 
     except OSError as e:
         cl.close()

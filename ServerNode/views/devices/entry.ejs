@@ -13,20 +13,20 @@
             <div class="container">
                 <form action="<%=model.form.action%>" method="POST">
                     <% if(model.form.edit) { %>
-                        <input name="TaskID" type="hidden" value="<%=model.TaskID%>" />
+                        <input name="DeviceID" type="hidden" value="<%=model.DeviceID%>" />
                     <% } %>
                     <label for="Name" class="form-label">Name</label>
                     <input id="Name" class="form-control" type="text" placeholder="Name" name="Name" value="<%=model.Name%>" />
-                    <% if (model.errors) { 
-                        model.errors.forEach(function(error) {
-                            if(error.path == 'Name') { %>
+                    <label for="RemoteAddress" class="form-label mt-2">Remote Address</label>
+                    <input id="RemoteAddress" class="form-control" type="text" placeholder="Host/IP Address" name="RemoteAddress" value="<%=model.RemoteAddress%>" />
+                    <label for="RemotePort" class="form-label mt-2">Remote Port</label>
+                    <input id="RemotePort" class="form-control" type="text" placeholder="Port" name="RemotePort" value="<%=model.RemotePort%>" />
+                    <% if (model.errors) { model.errors.forEach(function(error) { %>
                                 <div class="form-text text-danger"><%=error.msg%></div>
-                    <%      }
-                        });
-                    } %>
+                    <%  }); } %>
                     <hr />
                     <button type="submit" class="btn btn-success">Submit</button>
-                    <a href="/tasks" class="btn btn-secondary">Cancel</a>
+                    <a href="/devices" class="btn btn-secondary">Cancel</a>
                 </form>
             </div>
             <!-- Body End here -->

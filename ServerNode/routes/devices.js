@@ -5,6 +5,7 @@ const navMenu = require('../routes/_navigation');
 const dataModel = require('../models/device');
 const task = require('../models/task');
 const taskProcess = require('../models/taskprocess');
+const http = require('http');
 
 // Validator
 const {body , validationResult } = require('express-validator');
@@ -126,14 +127,13 @@ router.post('/edit'
   pageAddress = "/edit";
 
   let data = req.body;
-  data.form = {edit: 'edit', action: '/' + routeAddress + pageAddress
-  };
+  data.form = {edit: 'edit', action: '/' + routeAddress + pageAddress };
 
   // Validation
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     data.errors = errors.array();
-    return res.render(routeAddress + pageAddress, 
+    return res.render(routeAddress + '/entry', 
     { title: generalFunctions.getTitle(routeTitle, pageTitle), 
       brand: pageBrand, 
       navMenu: navMenu, model: data});
@@ -148,7 +148,7 @@ router.post('/edit'
           location: 'body'
         });
 
-    return res.render(routeAddress + pageAddress, 
+    return res.render(routeAddress + '/entry', 
       { title: generalFunctions.getTitle(routeTitle, pageTitle), 
         brand: pageBrand, 
         navMenu: navMenu, 
@@ -177,6 +177,7 @@ router.delete('/' , async (req, res) => {
 // Send Task to Device
 router.post('/sendTask', async (req, res)=> {
   let data = req.body;
+  let selectedDevice = await dataModel.findByID([data.DeviceID]);
   let selectedTask = await task.findByID([data.TaskID]);
   if (selectedTask) 
   {
@@ -187,66 +188,13 @@ router.post('/sendTask', async (req, res)=> {
     * , FalseProcessType, FalseProcessID, FalseDebugMessage, ActionType
     */
     let fileName = "./export/task" + data.TaskID + ".cfg";
-    let lineText = "[" + selectedTask.TaskID + "," + selectedTask.Name + "]";
     let fileHandle;
 
     try
     {
       await fs.open(fileName, "w");
       fileHandle = await fs.open(fileName, 'w');
-      await fileHandle.write(lineText +"\n");
-      await selectedTask.Processes.forEach(async (process, index)=>{
-        await fileHandle.write(JSON.stringify(process)+"\n");
-
-        /*let keys = Object.keys(process);
-        let lineText;
-
-        console.log(JSON.stringify(process));
-
-        keys.forEach((key, index)=>{
-          let localText;
-          if (process[key])
-          {
-            localText = process[key].toString();
-          }
-          else
-          {
-            localText = "NULL";
-          }
-
-            if (index > 0)
-            lineText += ",";
-
-          lineText += localText;
-          console.log(key, typeof process[key]);
-        });
-
-        console.log(lineText);
-
-
-
-        await fileHandle.write("," + process.ProcessSerial.toString());
-        await fileHandle.write(process.ProcessID.toString());
-        await fileHandle.write("," + process.ProcessType.toString());
-        await fileHandle.write("," + process.Name);
-        await fileHandle.write("," + process.Pin.toString());
-        await fileHandle.write("," + process.PinType.toString());
-        await fileHandle.write("," + process.SerialOutRawData.toString());
-        await fileHandle.write("," + process.BroadcastValue.toString());
-        await fileHandle.write("," + process.ThresholdLow?.toString());
-        await fileHandle.write("," + process.ThresholdHigh?.toString());
-        await fileHandle.write("," + process.TrueProcessType?.toString());
-        await fileHandle.write("," + process.TrueProcessID?.toString());
-        await fileHandle.write("," + process.TrueDebugMessage);
-        await fileHandle.write("," + process.FalseProcessType?.toString());
-        await fileHandle.write("," + process.FalseProcessID?.toString());
-        await fileHandle.write("," + process.FalseDebugMessage);
-        await fileHandle.write("," + process.ActionType?.toString());
-        await fileHandle.write("\n");
-        */
-
-      });
-
+      await fileHandle.write(JSON.stringify(selectedTask) +"\n");
     }
     catch(err)
     {
@@ -257,31 +205,33 @@ router.post('/sendTask', async (req, res)=> {
       await fileHandle?.close();
     }
 
+     // Upload to Device
+    let urlparams = {
+      host: selectedDevice.RemoteAddress, //No need to include 'http://' or 'www.'
+      port: '80', // selectedDevice.RemotePort?? '8080',
+      path: '/configure',
+      method: 'POST',
+      headers: {
+          'Content-Type': 'application/json', //Specifying to the server that we are sending JSON 
+      }
+    };
 
+    console.log(urlparams);
 
-      /*
-      selectedTask.Processes.forEach((process)=>{
-        fs.write(file, process.ProcessID.toString());
-        fs.write(file, "," + process.ProcessSerial.toString());
-        fs.write(file, "," + process.ProcessType.toString());
-        fs.write(file, "," + process.Name);
-        fs.write(file, "," + process.Pin.toString());
-        fs.write(file, "," + process.PinType.toString());
-        fs.write(file, "," + process.SerialOutRawData.toString());
-        fs.write(file, "," + process.BroadcastValue.toString());
-        fs.write(file, "," + process.ThresholdLow?.toString());
-        fs.write(file, "," + process.ThresholdHigh?.toString());
-        fs.write(file, "," + process.TrueProcessType?.toString());
-        fs.write(file, "," + process.TrueProcessID?.toString());
-        fs.write(file, "," + process.TrueDebugMessage);
-        fs.write(file, "," + process.FalseProcessType?.toString());
-        fs.write(file, "," + process.FalseProcessID?.toString());
-        fs.write(file, "," + process.FalseDebugMessage);
-        fs.write(file, "," + process.ActionType?.toString());
-        fs.write(file, "\n");
-      });
-    });
-    */
+    try
+    {
+      let request = http.request(urlparams, (res)=>{
+        var data = '';
+        console.log('res: ', res);
+      }); //Create a request object.
+
+      request.write(JSON.stringify(selectedTask)); //Send off the request.
+      request.end(); //End the request.
+    }
+    catch(err)
+    {
+      console.log('catch: ',err);
+    }
 
     }
     res.redirect('/devices/details/' + data.DeviceID);
@@ -300,10 +250,6 @@ router.get('/scan', async (req, res) => {
 
   if (! await adapter.isDiscovering())
   await adapter.startDiscovery()
-
-
-
-
 
   let pageModel = {};
   pageModel.bles = adapter.devices();
