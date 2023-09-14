@@ -1,9 +1,17 @@
 import gmClasses as gmc
 
-from machine import Pin
 
 filename = 'app.cfg'
 appConfig = gmc.AppConfiguration(filename)
+
+while not appConfig.readConfigurationFile():
+    # the configuration file is missing,
+    # run BLE to connect to the server
+    appConfig.ble_BroadcastDevice()
+    
+    
+
+
 (nc,err) = appConfig.connect(0, 3)
 
 if nc.status() != 3:
@@ -14,7 +22,7 @@ else:
     print( 'ip = ' + status[0] )
 
 filename = 'task.cfg'
-tsk = gmc.NodeTask(filename)
+tsk = gmc.NodeTask(filename, appConfig.Host)
 if not tsk:
     print("Error Unable to continue, Task file is not available")
 
@@ -25,29 +33,53 @@ if not tsk:
 # , ActionType
 #while True:
 
+print(appConfig.Host)
+
+
+maxWait = 3
+processID = tsk.getFirstProcessID()
 NumberOfProcesses = len(tsk.Processes)
-processID = 0
-runningValue = None
-
+outcome: gmc.ProcessOutcome = None
+print(f"Task {tsk.Name} ({tsk.TaskID}) Started")
 while processID != -1:
-    print('Task Started')
-    process = gmc.TaskProcess(tsk.Processes[processID])
-    
-    if process.ProcessType == gmc.ProcessType.Status:
-        process.initPin()
-        runningValue = process.readPinRawValue()
-    else:
-        pass
-
-    if process.SerialOutRawData:
-        print(runningValue)
-    
-    
-    
-
-    processID = processID + 1
+    # process = tsk.Processes[processID]
+    print(f"Running Process: {tsk.Processes[processID].Name}")
+    # A single process start here, depending on the type the execution will run
+    # The infinit loop in case of loop required
+    tsk.Processes[processID].initPin()
+    while True:
+        # One of the process type will hapeand
+        # First one Status
+        outcome = tsk.Processes[processID].Run(outcome)
+        
+        if(outcome):
+            # print all information to debug session
+            if outcome.SerialOutRawData:
+                print(f"Process raw value: {outcome.Value}")
+            
+            # processing the outcome of the process already executed
+            if outcome.ProcessWorkflow == gmc.ProcessWorkflowTypes.Loop:
+                continue
+            elif outcome.ProcessWorkflow == gmc.ProcessWorkflowTypes.NextProcess:
+                processID = processID + 1
+            elif outcome.ProcessWorkflow == gmc.ProcessWorkflowTypes.GoToProcessSerial:
+                processID = tsk.getProcessByProcessSerial(outcome.NextProcessSerial)
+            elif outcome.ProcessWorkflow == gmc.ProcessWorkflowTypes.Exit:
+                pass
+        else:
+            maxWait = maxWait - 1
+        
+        if maxWait == -1:
+            break
+            
+        
     if processID >= NumberOfProcesses:
         processID = -1
-        
-    print('Task Finished')  
+    
+    if not outcome or outcome.ProcessWorkflow == gmc.ProcessWorkflowTypes.Exit:
+        break
 
+print(f"Task {tsk.Name} ({tsk.TaskID}) Finished")
+    
+    
+    

@@ -22,7 +22,7 @@ exports.getProcessTypeDisplay = function(processType) {
     else if (processType == 1)
         display = "Action";
     else if (processType == 2)
-        display = "Record";
+        display = "Notification";
 
     return display;
 }

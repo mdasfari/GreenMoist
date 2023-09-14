@@ -4,8 +4,6 @@ import time
 import json
 import machine 
 import ubinascii
-import bluetooth
-from drivers.ble_simple_peripheral import BLESimplePeripheral
 
 class ProcessTypes:
     Status = 0
@@ -61,26 +59,13 @@ class Host:
         return f"{self.Hostname}:{self.Port}"
 
 class AppConfiguration:
-    ConfigFilename = None
     Host = None
     Network = None
-    BleQueue = []
-    
     def __init__(self, AppConfigFile):
-        ConfigFilename = AppConfigFile
-    
-    def readConfigurationFile(self):
-        returnResult = False
-        try:
-            with open(ConfigFilename, "r") as configFile:
-                appData = json.loads(configFile.read())
-                self.Host = Host(appData['Host']['Hostname'], appData['Host']['Port'])
-                self.Network = appData['Network']
-                returnResult = True
-        except:
-            returnResult = False
-            
-        return returnResult
+        with open(AppConfigFile, "r") as configFile:
+            appData = json.loads(configFile.read())
+            self.Host = Host(appData['Host']['Hostname'], appData['Host']['Port'])
+            self.Network = appData['Network']
 
     def connect(self, networkID, max_wait = 10):
         wlan = None
@@ -102,44 +87,6 @@ class AppConfiguration:
         finally:
             return (wlan, Err)
         
-    def ble_BroadcastDevice(self):
-        # the folowing function used two library which I did not wrote
-        # I used it as it is for create a BLE communication
-        # the communication protocol in def on_rx(data): and this function is my coding
-        # Source: https://electrocredible.com/raspberry-pi-pico-w-bluetooth-ble-micropython/
-        
-        # Create a Bluetooth Low Energy (BLE) object
-        ble = bluetooth.BLE()
-        
-        # Create an instance of the BLESimplePeripheral class with the BLE object
-        sp = BLESimplePeripheral(ble, "GreenMoistAN")
-        
-        # Define a callback function to handle received data
-        def on_rx(data):
-            print("Data received: ", data)  # Print the received data
-            if data == b'IDENTIFY':  # Check if the received data is "toggle"
-                self.BleQueue.append(getBoardSerialNumber())
-            if data == b'ACKNOWLEDGE':  
-                self.BleQueue.append("CREDENTIAL")
-            if data[:4] == b'SSID':
-                self.BleQueue.append("ONBOARD")
-            if data[:3] == b'PWD':
-                self.BleQueue.append("CONNECTED")
-            if data == b'AUTHORIZED':  
-                self.BleQueue.append("CREDENTIAL")
-                
-        # Start an infinite loop
-        if sp.is_connected():  # Check if a BLE connection is established
-            sp.on_write(on_rx)  # Set the call
-                
-        while True:
-            if sp.is_connected():  # Check if a BLE connection is established
-                if (len(self.BleQueue) > 0):
-                    command = self.BleQueue[0]
-                    print(command)
-                    sp.send(command)
-                    self.BleQueue.pop(0)
-
 class NodeTask:
     TaskID = None
     Name = None
