@@ -67,17 +67,18 @@ class AppConfiguration:
     BleQueue = []
     
     def __init__(self, AppConfigFile):
-        ConfigFilename = AppConfigFile
+        self.ConfigFilename = AppConfigFile
     
     def readConfigurationFile(self):
         returnResult = False
         try:
-            with open(ConfigFilename, "r") as configFile:
+            with open(self.ConfigFilename, "r") as configFile:
                 appData = json.loads(configFile.read())
                 self.Host = Host(appData['Host']['Hostname'], appData['Host']['Port'])
                 self.Network = appData['Network']
                 returnResult = True
-        except:
+        except Exception as err:
+            print("error: ", err, " Type: ", type(err))
             returnResult = False
             
         return returnResult

@@ -8,11 +8,8 @@ while not appConfig.readConfigurationFile():
     # the configuration file is missing,
     # run BLE to connect to the server
     appConfig.ble_BroadcastDevice()
-    
-    
 
-
-(nc,err) = appConfig.connect(0, 3)
+(nc,err) = appConfig.connect(1, 3)
 
 if nc.status() != 3:
     raise RuntimeError('network connection failed')
