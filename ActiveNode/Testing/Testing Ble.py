@@ -1,3 +1,4 @@
+from gmClasses import getBoardSerialNumber
 import bluetooth
 from drivers.ble_simple_peripheral import BLESimplePeripheral
 
@@ -12,8 +13,9 @@ sp = BLESimplePeripheral(ble, "GreenMoistAN")
 def on_rx(data):
     print("Data received: ", data)  # Print the received data
     if data == b'IDENTIFY':  # Check if the received data is "toggle"
-        sp.send("SERIAL_NUMBER")
-        # BleQueue.append(getBoardSerialNumber())
+        print("Prepare and send Serial Number")
+        print(sp.send("SERIAL_NUMBER"))
+        BleQueue.append(getBoardSerialNumber())
     if data == b'ACKNOWLEDGE':  
         BleQueue.append("CREDENTIAL")
     if data[:4] == b'SSID':
@@ -33,7 +35,8 @@ while True:
             armed = True
         
         if (len(BleQueue) > 0):
+            print("Queue Has Data")
             command = BleQueue[0]
             print(command)
-            sp.send(command)
+            print(sp.send(command))
             BleQueue.pop(0)

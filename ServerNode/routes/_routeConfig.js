@@ -9,5 +9,8 @@ for(var i = 0; i < navMenu.length; i++) {
     // console.log(`Url: ${navMenu[i].url}, id: ${'../routes/'  + navMenu[i].id}`);
 }
 
+/* Adding Interface for REST API interface */
+router.use('/interface', require('./interface'));
+
 module.exports = router;
 
