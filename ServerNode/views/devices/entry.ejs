@@ -17,12 +17,28 @@
                     <% } %>
                     <label for="Name" class="form-label">Name</label>
                     <input id="Name" class="form-control" type="text" placeholder="Name" name="Name" value="<%=model.Name%>" />
-                    <label for="RemoteAddress" class="form-label mt-2">Remote Address</label>
-                    <input id="RemoteAddress" class="form-control" type="text" placeholder="Host/IP Address" name="RemoteAddress" value="<%=model.RemoteAddress%>" />
-                    <label for="RemotePort" class="form-label mt-2">Remote Port</label>
-                    <input id="RemotePort" class="form-control" type="text" placeholder="Port" name="RemotePort" value="<%=model.RemotePort%>" />
+                    <div class="row mt-2">
+                        <div class="col-md-10">
+                            <label for="RemoteAddress" class="form-label">Remote Address</label>
+                            <input id="RemoteAddress" class="form-control" type="text" placeholder="Host/IP Address" name="RemoteAddress" value="<%=model.RemoteAddress%>" />
+                        </div>
+                        <div class="col-md-2 mt-2 mt-md-0">
+                            <label for="RemotePort" class="form-label">Remote Port</label>
+                            <input id="RemotePort" class="form-control" type="text" placeholder="Port" name="RemotePort" value="<%=model.RemotePort%>" />
+                        </div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col-md-10">
+                            <label for="SerialNumber" class="form-label">Serial Number</label>
+                            <input id="SerialNumber" class="form-control" type="text" placeholder="Serial Number" name="SerialNumber" value="<%=model.SerialNumber%>" />
+                        </div>
+                        <div class="col-md-2 mt-2 mt-md-0">
+                            <label for="Version" class="form-label">Version</label>
+                            <input id="Version" class="form-control" type="text" placeholder="Version" name="Version" value="<%=model.Version%>" />
+                        </div>
+                    </div>
                     <% if (model.errors) { model.errors.forEach(function(error) { %>
-                                <div class="form-text text-danger"><%=error.msg%></div>
+                        <div class="form-text text-danger"><%=error.msg%></div>
                     <%  }); } %>
                     <hr />
                     <button type="submit" class="btn btn-success">Submit</button>

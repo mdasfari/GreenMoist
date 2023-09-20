@@ -4,13 +4,10 @@ import time
 
 from machine import Pin
 
-led = Pin('LED', Pin.OUT)
+led = Pin(15, Pin.OUT)
 
 ssid = 'Al-Faisal'
 password = 'c1tyt@qa'
-
-# ssid = 'LowZoneGamma'
-# password = 'WKV@62YQJG$7'
 
 wlan = network.WLAN(network.STA_IF)
 wlan.active(True)
@@ -62,12 +59,12 @@ while True:
         print( 'led on = ' + str(led_on))
         print( 'led off = ' + str(led_off))
 
-        if led_on == 7:
+        if led_on == 6:
             print("led on")
             led.value(1)
             stateis = "LED is ON"
 
-        if led_off == 7:
+        if led_off == 6:
             print("led off")
             led.value(0)
             stateis = "LED is OFF"

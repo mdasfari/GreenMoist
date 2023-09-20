@@ -17,11 +17,26 @@
                 <div class="form-container">
                     <label for="Name" class="form-label">Name</label>
                     <input type="text" class="form-control" value="<%=model.Name%>" readonly />
-                    <label for="RemoteAddress" class="form-label mt-2">Remote Address</label>
-                    <input type="text" class="form-control" value="<%=model.RemoteAddress%>" readonly />
-                    <label for="RemotePort" class="form-label mt-2">Remote Port</label>
-                    <input type="text" class="form-control" value="<%=model.RemotePort%>" readonly />
-
+                    <div class="row mt-2">
+                        <div class="col-md-10">
+                            <label for="RemoteAddress" class="form-label">Remote Address</label>
+                            <input type="text" class="form-control" value="<%=model.RemoteAddress%>" readonly />        
+                        </div>
+                        <div class="col-md-2 mt-2 mt-md-0">
+                            <label for="RemotePort" class="form-label">Remote Port</label>
+                            <input type="text" class="form-control" value="<%=model.RemotePort%>" readonly />                            
+                        </div>
+                    <div>
+                    <div class="row mt-2">
+                        <div class="col-md-10">
+                            <label for="SerialNumber" class="form-label mt-2">Serial Number</label>
+                            <input type="text" class="form-control" value="<%=model.SerialNumber%>" readonly />
+                        </div>
+                        <div class="col-md-2 mt-2 mt-md-0">
+                            <label for="Version" class="form-label mt-2">Version</label>
+                            <input type="text" class="form-control" value="<%=model.Version%>" readonly />
+                        </div>
+                    <div>
                     <hr />
                     <a class="btn btn-warning" href="/devices/edit/<%=model.DeviceID%>">Edit</a>
                     <button id="deleteButton" type="button" class="btn btn-danger" onclick="deleteRecord('/devices', <%=model.DeviceID%>, '<%=model.Name%>', '/devices')">Delete</button>

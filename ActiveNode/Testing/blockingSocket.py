@@ -4,13 +4,10 @@ import time
 
 from machine import Pin
 
-led = Pin('LED', Pin.OUT)
+led = Pin(15, Pin.OUT)
 
 ssid = 'Al-Faisal'
 password = 'c1tyt@qa'
-
-# ssid = 'LowZoneGamma'
-# password = 'WKV@62YQJG$7'
 
 wlan = network.WLAN(network.STA_IF)
 wlan.active(True)
@@ -51,33 +48,28 @@ print('listening on', addr)
 # Listen for connections
 while True:
     try:
+        data = ''
+        s.setblocking(True)
         cl, addr = s.accept()
-        print('client connected from', addr)
-        request = cl.recv(1024)
-        print(request)
-
-        request = str(request)
-        led_on = request.find('/light/on')
-        led_off = request.find('/light/off')
-        print( 'led on = ' + str(led_on))
-        print( 'led off = ' + str(led_off))
-
-        if led_on == 7:
-            print("led on")
-            led.value(1)
-            stateis = "LED is ON"
-
-        if led_off == 7:
-            print("led off")
-            led.value(0)
-            stateis = "LED is OFF"
-
-        response = html % stateis
-
+        print(f"Address: {addr}");
+        cl.setblocking(False)
+        while True:
+            request = cl.read(1024)
+            print(f"req: {request}")
+            if request:
+                data = data + str(request, 'utf-8')
+            else:
+                break
+            
+            time.sleep(0.01)
+        
+        print(f"Data: {data}")
         cl.send('HTTP/1.0 200 OK\r\nContent-type: text/html\r\n\r\n')
-        cl.send(response)
-        cl.close()
-
+        cl.send("<p>This is the end of response</p>")
+        
     except OSError as e:
-        cl.close()
+        print(f"{e} - Type: {typeof(e)}")
         print('connection closed')
+    finally:
+        print('finally')
+        cl.close()

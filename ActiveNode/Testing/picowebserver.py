@@ -9,7 +9,7 @@ configRead = appConfig.readConfigurationFile()
 print("Read Configuration file: ", configRead)
 
 if configRead:
-    (nc,err) = appConfig.connect(1, 3) # 0 for work, 1 for personal
+    (nc,err) = appConfig.connect(0, 3) # 0 for work, 1 for personal
     
     if nc.status() != 3:
         raise RuntimeError('network connection failed')
@@ -36,20 +36,22 @@ while True:
         
         chunk = 0
         while True:
-            request = cl.recv(1024)
-            
+            print(f"Step: {chunk}")
+            request = cl.recv(1024).decode()
+            print(f"{chunk} - {request}")
             if request:
-                requestData = requestData + str(request, 'utf-8')
+                requestData = requestData + request
                 print(chunk)
-                chunk = chunk+1
             else:
                 break
                 
-            
+        
+        print("Data:------------------------")
         print(requestData)
         
 
         cl.send('HTTP/1.0 200 OK\r\nContent-type: text/html\r\n\r\n')
+        cl.send('<p>This is the end of the response</p>')
         cl.close()
         print("Connection Closed")
 

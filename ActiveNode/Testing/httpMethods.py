@@ -1,7 +1,7 @@
 import socket
 from gmClasses import AppConfiguration
 
-def executeUrl(url, webMethod, dataInput):
+def executeUrl(url, webMethod, dataInput = None):
     lineBreak = '\r\n'
     charset = 'utf-8'
     _,_,host,path = url.split('/', 3)
@@ -69,7 +69,7 @@ configRead = appConfig.readConfigurationFile()
 print("Read Configuration file: ", configRead)
 
 if configRead:
-    (nc,err) = appConfig.connect(1, 3) # 0 for work, 1 for personal
+    (nc,err) = appConfig.connect(0, 3) # 0 for work, 1 for personal
     
     if nc.status() != 3:
         raise RuntimeError('network connection failed')
@@ -78,7 +78,7 @@ if configRead:
         status = nc.ifconfig()
         print( 'ip = ' + status[0] )
         
-dataResult = executeUrl("http://192.168.19.50:3000/interface/status", 'GET', None)
+dataResult = executeUrl("http://192.168.19.50:3000/interface/status", 'GET')
 print(dataResult)
 #print("Header:-----------------")
 #print(f"Status: {dataResult[0]}")
