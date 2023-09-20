@@ -38,21 +38,34 @@
                         </div>
                     <div>
                     <hr />
-                    <a class="btn btn-warning" href="/devices/edit/<%=model.DeviceID%>">Edit</a>
-                    <button id="deleteButton" type="button" class="btn btn-danger" onclick="deleteRecord('/devices', <%=model.DeviceID%>, '<%=model.Name%>', '/devices')">Delete</button>
-                    <a class="btn btn-secondary" href="/devices">Return</a>
+                    <div class="row mt-3">
+                        <div class="col-md-5">
+                            <a class="btn btn-warning" href="/devices/edit/<%=model.DeviceID%>">Edit</a>
+                            <button id="deleteButton" type="button" class="btn btn-danger" onclick="deleteRecord('/devices', <%=model.DeviceID%>, '<%=model.Name%>', '/devices')">Delete</button>
+                            <a class="btn btn-secondary" href="/devices">Return</a>
+                        </div>
+                        <div class="col-md-7">
+                            <form method="post" action="/devices/sendTask">
+                                <input type="hidden" id="DeviceID" name="DeviceID" value="<%=model.DeviceID%>" />
+                                <div class="row mt-2 mt-md-0">
+                                    <div class="col-10">
+                                        <select class="form-select" id="TaskID" name="TaskID">
+                                            <option value="" selected="selected">{Select a task}</option>
+                                            <% if(model.tasks) { model.tasks.forEach((task)=>{ %>
+                                                <option value="<%=task.TaskID%>"><%=task.Name%></option>
+                                                <% }); }%>
+                                        </select>
+                                    </div>
+                                    <div class="col-1">
+                                        <input class="btn btn-success" type="submit" value="Send" />
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
                     <hr/>
-                    <form method="post" action="/devices/sendTask">
-                        <input type="hidden" id="DeviceID" name="DeviceID" value="<%=model.DeviceID%>" />
-                        <label class="form-label" for="TaskID">Send Task</label>
-                        <select class="form-select" id="TaskID" name="TaskID">
-                            <option value="" selected="selected">{Select a task}</option>
-                            <% if(model.tasks) { model.tasks.forEach((task)=>{ %>
-                                <option value="<%=task.TaskID%>"><%=task.Name%></option>
-                            <% }); }%>
-                        </select>
-                        <input class="btn btn-danger mt-2" type="submit" />
-                    </form>
+                    <h3>Device Notification</h3>
+                    <hr/>
                 </div>
                 <!-- /Task -->
             </div>

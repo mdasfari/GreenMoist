@@ -29,19 +29,20 @@ let res = "";
   let data = deviceRecord.create(null, reqData["DeviceID"], reqData["RecordDate"], reqData["ProcessID"], reqData["ProcessType"], reqData["Pin"], reqData["PinType"], reqData["DebugMessage"], reqData["Value"], reqData["ThresholdLow"], reqData["ThresholdHigh"]);
   console.log(data);
 
-  result = await deviceRecord.insert(data);
-
-  console.log(result);
-  if (result.affectedRecord > 0)
+  try 
   {
-    res = '{"RecordID": result.insertID}';
+    result = await deviceRecord.insert(data);
+
+    if (result.affectedRows > 0) {
+      return response.status(201).json('{"RecordID":' + result.insertId + '}');
+    } else {
+      return response.sendStatus(400);
+    }
   }
-  
-
- 
-
-  return response.status(201).json(res);
-  // response.json(request.body);
+  catch (ex)
+  {
+    return response.status(400).json(ex);
+  }
 });
 
 /*

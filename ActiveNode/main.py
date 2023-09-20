@@ -52,7 +52,7 @@ while processID != -1:
         if(outcome):
             # print all information to debug session
             if outcome.SerialOutRawData:
-                print(f"Process raw value: {outcome.Value}")
+                print(f"Process Pin:{tsk.Processes[processID].Pin} raw value: {outcome.Value}")
             
             # processing the outcome of the process already executed
             if outcome.ProcessWorkflow == gmc.ProcessWorkflowTypes.Loop:

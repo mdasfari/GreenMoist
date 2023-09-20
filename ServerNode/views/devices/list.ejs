@@ -15,13 +15,14 @@
                 <table class="table table-striped indexTable">
                     <colgroup>
                         <col style="width:10px;" />
-                        <col style="width:78%;" />
+                        <col style="width:68%;" />
+                        <col style="width:10%;" />
                         <col style="width:10%;" />
                         <col style="width:10%;" />
                     </colgroup>
                     <thead>
                         <tr>
-                            <td colspan="2">
+                            <td colspan="5">
                                 <a href="/devices/new" class="linkbutton">New</a>
                             </td>
                         </tr>
@@ -30,6 +31,7 @@
                             <th>Name</th>
                             <th>Address</th>
                             <th>Port</th>
+                            <th>Version</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -39,6 +41,7 @@
                                 <td><a href="/devices/details/<%= record.DeviceID %>"><%= record.Name %></a></td>
                                 <td><%= record.RemoteAddress %></td>
                                 <td><%= record.RemotePort %></td>
+                                <td><%= record.Version %></td>
                             </tr>
                         <% }); %>
                     </tbody>
