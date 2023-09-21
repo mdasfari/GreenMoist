@@ -66,6 +66,30 @@
                     <hr/>
                     <h3>Device Notification</h3>
                     <hr/>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Process</th>
+                                <th>Process Type</th>
+                                <th>Pin</th>
+                                <th>Pin Type</th>
+                                <th>Value</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% if(model.records) { model.records.forEach((record)=> { %>
+                                <tr>
+                                    <td><%=record.RecordDate%></td>
+                                    <td><%=record.ProcessID%></td>
+                                    <td><%=record.ProcessType%></td>
+                                    <td><%=record.Pin%></td>
+                                    <td><%=record.PinType%></td>
+                                    <td><%=record.Value%></td>
+                                </tr>
+                            <% }); } %>
+                        </tbody>
+                    </table>
                 </div>
                 <!-- /Task -->
             </div>

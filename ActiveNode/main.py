@@ -9,7 +9,7 @@ while not appConfig.readConfigurationFile():
     # run BLE to connect to the server
     appConfig.ble_BroadcastDevice()
 
-(nc,err) = appConfig.connect(1, 3)
+(nc,err) = appConfig.connect(0, 3)
 
 if nc.status() != 3:
     raise RuntimeError('network connection failed')
@@ -19,9 +19,11 @@ else:
     print( 'ip = ' + status[0] )
 
 filename = 'task.cfg'
-tsk = gmc.NodeTask(filename, appConfig.Host)
+tsk = gmc.NodeTask(filename, appConfig.Host, appConfig.Device)
 if not tsk:
     print("Error Unable to continue, Task file is not available")
+    while True:
+        pass
 
 #   ProcessID, TaskID, ProcessSerial, ProcessType, Name
 # , Pin, PinType, SerialOutRawData, BroadcastValue, ThresholdLow, ThresholdHigh
@@ -29,9 +31,6 @@ if not tsk:
 # , FalseProcessType, FalseProcessID, FalseDebugMessage
 # , ActionType
 #while True:
-
-print(appConfig.Host)
-
 
 maxWait = 3
 processID = tsk.getFirstProcessID()
@@ -68,13 +67,17 @@ while processID != -1:
         
         if maxWait == -1:
             break
-            
         
-    if processID >= NumberOfProcesses:
-        processID = -1
+        if processID > NumberOfProcesses - 1:
+            processID = 0
     
     if not outcome or outcome.ProcessWorkflow == gmc.ProcessWorkflowTypes.Exit:
         break
+    
+    # Check if any waiting instruction on the queue
+    if (len(appConfig.ExecuteQueue) > 0):
+        # Execute the waiting instruction
+        pass    
 
 print(f"Task {tsk.Name} ({tsk.TaskID}) Finished")
     

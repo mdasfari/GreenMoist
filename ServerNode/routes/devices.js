@@ -3,6 +3,7 @@ const router = express.Router();
 const fs = require('fs/promises');
 const navMenu = require('../routes/_navigation');
 const dataModel = require('../models/device');
+const devicerecord = require('../models/devicerecord');
 const task = require('../models/task');
 const taskProcess = require('../models/taskprocess');
 const http = require('http');
@@ -23,8 +24,6 @@ router.get('/', async (req, res) => {
   pageTitle = null;
   pageAddress = "/list";
 
-  console.log(await dataModel.findAll());
-
   res.render(routeAddress + pageAddress, 
     { title: generalFunctions.getTitle(routeTitle, pageTitle), 
       brand: pageBrand, 
@@ -42,6 +41,7 @@ router.get('/details/:id', async (req, res) => {
     return;
 
   pageModel.tasks = await task.findAll();
+  pageModel.records = await devicerecord.findByDeviceID([req.params.id]);
 
   res.render(routeAddress  + pageAddress, 
     { title: generalFunctions.getTitle(routeTitle, pageTitle), 

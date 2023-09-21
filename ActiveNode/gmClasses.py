@@ -5,6 +5,7 @@ import json
 import machine 
 import ubinascii
 import bluetooth
+import json
 from drivers.ble_simple_peripheral import BLESimplePeripheral
 
 class ProcessTypes:
@@ -50,6 +51,66 @@ def getProcessSerial(itm):
 def getBoardSerialNumber():
     return ubinascii.hexlify(machine.unique_id()).upper().decode('utf-8')
 
+def executeUrl(url, webMethod, dataInput = None):
+    lineBreak = '\r\n'
+    charset = 'utf-8'
+    _,_,host,path = url.split('/', 3)
+    host_part = host.split(':')
+    
+    server = host_part[0]
+    port = int(host_part[1])
+    
+    addressInfo = socket.getaddrinfo(server, port)
+    sock = socket.socket()
+
+    sock.connect(addressInfo[0][-1])
+    
+    request = ""
+    requestParts = []
+    requestParts.append(f'{webMethod} /{path} HTTP/1.0')
+    requestParts.append(f'Host: {host}')
+
+    if dataInput:
+        requestParts.append('Content-Type: application/json')
+        requestParts.append(f'Content-Length: {len(dataInput)}')
+        requestParts.append("")
+        requestParts.append(dataInput)
+    
+    for part in requestParts:
+        request = request + part + lineBreak
+    
+    request = request + lineBreak    
+    
+    httpCommand = bytes(request, charset)
+    sock.write(httpCommand)
+
+    data = ''
+    chunk = 0
+    while True:
+        packet = sock.recv(1024).decode()
+        if packet:
+            data = data + str(packet, charset)
+            chunk = chunk + 1
+        else:
+            break
+    
+    sock.close()
+    
+    data_parts = data.split(lineBreak)
+
+    return data_parts #(status, result)
+
+class Device:
+    DeviceID: None
+    Name: None
+    
+    def __init__(self, deviceID, name):
+        self.DeviceID = deviceID
+        self.Name = name
+        
+    def __str__(self):
+        return f"{self.Name} ({self.DeviceID})"
+
 class Host:
     Hostname = None
     Port = None
@@ -62,9 +123,12 @@ class Host:
 
 class AppConfiguration:
     ConfigFilename = None
+    Device = None
+    Version = None
+    OSUpdate = False
     Host = None
     Network = None
-    BleQueue = []
+    ExecuteQueue = []
     
     def __init__(self, AppConfigFile):
         self.ConfigFilename = AppConfigFile
@@ -74,6 +138,9 @@ class AppConfiguration:
         try:
             with open(self.ConfigFilename, "r") as configFile:
                 appData = json.loads(configFile.read())
+                self.Version = appData['Version']
+                self.OSUpdate = appData['OSUpdate']
+                self.Device = Device(appData['DeviceID'], appData['Name'])
                 self.Host = Host(appData['Host']['Hostname'], appData['Host']['Port'])
                 self.Network = appData['Network']
                 returnResult = True
@@ -82,6 +149,18 @@ class AppConfiguration:
             returnResult = False
             
         return returnResult
+    
+    def writeConfiguration(self):
+        returnResult = False
+        try:
+            with open(self.ConfigFilename, "w") as configFile:
+                configFile.write(self)
+                returnResult = True
+        except Exception as err:
+            print("error: ", err, " Type: ", type(err))
+            returnResult = False
+        finally:
+            return returnResult
 
     def connect(self, networkID, max_wait = 10):
         wlan = None
@@ -122,33 +201,26 @@ class AppConfiguration:
                 self.BleQueue.append(getBoardSerialNumber())
             if data == b'ACKNOWLEDGE':  
                 self.BleQueue.append("CREDENTIAL")
-            if data[:4] == b'SSID':
+            if data[:5] == b'INET:':
+                self.Host = Host(data[:5].split("PWD:")[0], data[:5].split("PWD:")[1])
                 self.BleQueue.append("ONBOARD")
-            if data[:3] == b'PWD':
-                self.BleQueue.append("CONNECTED")
             if data == b'AUTHORIZED':  
                 self.BleQueue.append("CREDENTIAL")
                 
         # Start an infinite loop
         if sp.is_connected():  # Check if a BLE connection is established
             sp.on_write(on_rx)  # Set the call
-                
-        while True:
-            if sp.is_connected():  # Check if a BLE connection is established
-                if (len(self.BleQueue) > 0):
-                    command = self.BleQueue[0]
-                    print(command)
-                    sp.send(command)
-                    self.BleQueue.pop(0)
 
 class NodeTask:
     TaskID = None
     Name = None
     Host = None
+    Device = None
     Processes = []
     
-    def __init__(self, filename, host):
+    def __init__(self, filename, host, device):
         self.Host = host
+        self.Device = device
         with open(filename, "r") as taskFile:
             taskData = json.loads(taskFile.read())
             self.TaskID = taskData['TaskID']
@@ -161,7 +233,7 @@ class NodeTask:
             
             for index in range(len(indexArray)):
                 id = indexArray[index][0]
-                self.Processes.append(TaskProcess(taskData['Processes'][id]))
+                self.Processes.append(TaskProcess(taskData['Processes'][id], self.TaskID, self.Name, self.Host, self.Device))
     
     def __str__(self):
         return f"{self.Name} ({self.TaskID})[{len(self.Processes)}]"
@@ -181,8 +253,11 @@ class NodeTask:
         return resultProcess
     
 class TaskProcess:
+    Host = None
+    Device = None
     ProcessID = None
     TaskID = None
+    TaskName = None
     ProcessSerial = None
     ProcessType = None
     Name = None
@@ -200,9 +275,12 @@ class TaskProcess:
     FalseDebugMessage = None
     ActionType = None
     
-    def __init__(self, process):
+    def __init__(self, process, taskID, taskName, host, device):
+        self.Host = host
+        self.Device = device
         self.ProcessID = process['ProcessID']
-        self.TaskID = process['TaskID']
+        self.TaskID = taskID
+        self.TaskName = taskName
         self.ProcessSerial = process['ProcessSerial']
         self.ProcessType = process['ProcessType']
         self.Name = process['Name']
@@ -222,6 +300,27 @@ class TaskProcess:
     
     def __str__(self):
         return f'{self.Name} ({self.ProcessSerial}), Pin:{self.Pin}'
+    
+    def getJson(self):
+        return json.dumps({"DeviceID": self.Device.DeviceID
+                , "ProcessID": self.ProcessID
+                , "TaskID": self.TaskID
+                , "ProcessSerial": self.ProcessSerial
+                , "ProcessType": self.ProcessType
+                , "Name": self.Name
+                , "Pin": self.Pin
+                , "PinType": self.PinType
+                , "SerialOutRawData": self.SerialOutRawData
+                , "BroadcastValue": self.BroadcastValue
+                , "ThresholdLow": self.ThresholdLow
+                , "ThresholdHigh": self.ThresholdHigh
+                , "TrueProcessType": self.TrueProcessType
+                , "TrueProcessID": self.TrueProcessID
+                , "TrueDebugMessage": self.TrueDebugMessage
+                , "FalseProcessType": self.FalseProcessType
+                , "FalseProcessID": self.FalseProcessID
+                , "FalseDebugMessage": self.FalseDebugMessage
+                , "ActionType": self.ActionType})
     
     def initPin(self):
         pinPolarity = None
@@ -289,14 +388,18 @@ class TaskProcess:
         externalOutcome.DebugMessage = self.TrueDebugMessage
 
     def runNotificationProcess(self, externalOutcome):
-        sock = socket.getaddrinfo(self.Host.Hostname, self.Host.Port)
-        addr = sock[0][-1]
+        data = {"DeviceID": self.Device.DeviceID
+                , "ProcessID": self.ProcessID
+                , "ProcessType": self.ProcessType
+                , "Pin": self.Pin
+                , "PinType": self.PinType
+                , "DebugMessage": self.TrueDebugMessage
+                , "Value": externalOutcome.Value
+                , "ThresholdLow": self.ThresholdLow
+                , "ThresholdHigh": self.ThresholdHigh}
         
-        # Create a socket and make a HTTP request
-        s = socket.socket()
-        s.connect(addr)
-        s.send(b"GET / HTTP/1.0\r\n\r\n")
+        if (self.BroadcastValue):
+            print(executeUrl(f"http://{self.Host}/interface/record", "POST", json.dumps(data)))
         
-        # Print the response
-        print(s.recv(1024))
+        return externalOutcome
     

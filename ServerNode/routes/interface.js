@@ -1,10 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const deviceRecord = require('../models/devicerecord');
+const task = require('../models/task');
+const taskprocess = require('../models/taskprocess');
 
 router.use(express.json());
 
-// All Tasks - Get
+// Testing method
 router.get('/status', async (request, response)=>{
   let result = '{'
 
@@ -17,16 +19,29 @@ router.get('/status', async (request, response)=>{
   response.json(result);
 });
 
+// Get Task Data
+router.get('/task/:id', async (request, response)=>{
+  let data = await task.findByID([request.params.id])
+  if (data){
+    let processes = await taskprocess.findAllByTaskID([request.params.id])
+    data.Processes = processes;
+    response.status(200).json(data);
+  } else {
+    return response.sendStatus(204);
+  }
+  
+});
+
 // Post Something
 router.post('/record', async (request, response)=>{
-  if (!request.body)
-  {
+  let reqData = request.body;
+  if (!reqData) {
     console.log("No data defined")
     return response.sendStatus(400);
   }
-let res = "";
-  let reqData = request.body;
-  let data = deviceRecord.create(null, reqData["DeviceID"], reqData["RecordDate"], reqData["ProcessID"], reqData["ProcessType"], reqData["Pin"], reqData["PinType"], reqData["DebugMessage"], reqData["Value"], reqData["ThresholdLow"], reqData["ThresholdHigh"]);
+
+  let res = "";
+  let data = deviceRecord.create(null, reqData["DeviceID"], new Date().toISOString().slice(0, 19).replace('T', ' '), reqData["ProcessID"], reqData["ProcessType"], reqData["Pin"], reqData["PinType"], reqData["DebugMessage"], reqData["Value"], reqData["ThresholdLow"], reqData["ThresholdHigh"]);
   console.log(data);
 
   try 
@@ -34,14 +49,15 @@ let res = "";
     result = await deviceRecord.insert(data);
 
     if (result.affectedRows > 0) {
-      return response.status(201).json('{"RecordID":' + result.insertId + '}');
+      return response.status(201).json("{'RecordID':" + result.insertId + "}");
     } else {
       return response.sendStatus(400);
     }
   }
   catch (ex)
   {
-    return response.status(400).json(ex);
+    console.log(ex)
+    return response.status(415).json(ex);
   }
 });
 
