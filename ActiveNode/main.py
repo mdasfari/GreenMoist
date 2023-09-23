@@ -107,7 +107,7 @@ def mainProgram():
                     processID = tsk.getProcessIDByProcessSerial(outcome.NextProcessSerial)
                 elif outcome.ProcessWorkflow == gmc.ProcessWorkflowTypes.Exit:
                     print("Process Workflow: Exit")
-                    pass
+                    processID = -1
             else:
                 maxWait = maxWait - 1
             

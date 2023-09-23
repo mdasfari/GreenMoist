@@ -409,19 +409,18 @@ class TaskProcess:
         externalOutcome.DebugMessage = self.TrueDebugMessage
 
     def runNotificationProcess(self, externalOutcome):
-        if self.ChangeRange and (math.fabs(externalOutcome.Value - externalOutcome.PreviousValue) >= self.ChangeRange):
-            data = {"DeviceID": self.Device.DeviceID
-                    , "ProcessID": self.ProcessID
-                    , "ProcessType": self.ProcessType
-                    , "Pin": self.Pin
-                    , "PinType": self.PinType
-                    , "DebugMessage": self.TrueDebugMessage
-                    , "Value": externalOutcome.Value
-                    , "ThresholdLow": self.ThresholdLow
-                    , "ThresholdHigh": self.ThresholdHigh}
-            
-            if (self.BroadcastValue):
-                print(executeUrl(f"http://{self.Host}/interface/record", "POST", json.dumps(data)))
+        data = {"DeviceID": self.Device.DeviceID
+                , "ProcessID": self.ProcessID
+                , "ProcessType": self.ProcessType
+                , "Pin": self.Pin
+                , "PinType": self.PinType
+                , "DebugMessage": self.TrueDebugMessage
+                , "Value": externalOutcome.Value
+                , "ThresholdLow": self.ThresholdLow
+                , "ThresholdHigh": self.ThresholdHigh}
+        
+        if (self.BroadcastValue):
+            print(executeUrl(f"http://{self.Host}/interface/record", "POST", json.dumps(data)))
                 
         return externalOutcome
     

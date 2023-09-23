@@ -1,7 +1,7 @@
 import machine
 import utime
 
-sensor = machine.ADC(0)
+sensor = machine.ADC(1)
 conversion_factor = 3.3 / (65535)
 while True:
     reading = sensor.read_u16()
