@@ -181,36 +181,39 @@ router.post('/sendTask', async (req, res)=> {
   let selectedTask = await task.findByID([data.TaskID]);
   if (selectedTask) 
   {
-    selectedTask.Processes = await taskProcess.findAllByTaskID([data.TaskID]);
+    // This is another variation of saving the file for download
+    // selectedTask.Processes = await taskProcess.findAllByTaskID([data.TaskID]);
     /* ProcessID, TaskID, ProcessSerial, ProcessType
     * , Name, Pin, PinType, SerialOutRawData, BroadcastValue
     * , ThresholdLow, ThresholdHigh, TrueProcessType, TrueProcessID, TrueDebugMessage
     * , FalseProcessType, FalseProcessID, FalseDebugMessage, ActionType
     */
-    let fileName = "./export/task" + data.TaskID + ".cfg";
-    let fileHandle;
+    
+    
+    // let fileName = "./export/task" + data.TaskID + ".cfg";
+    // let fileHandle;
 
-    try
-    {
-      await fs.open(fileName, "w");
-      fileHandle = await fs.open(fileName, 'w');
-      await fileHandle.write(JSON.stringify(selectedTask) +"\n");
-    }
-    catch(err)
-    {
-      console.log("Error: ", err);
-    }
-    finally
-    {
-      await fileHandle?.close();
-    }
+    // try
+    // {
+    //   await fs.open(fileName, "w");
+    //   fileHandle = await fs.open(fileName, 'w');
+    //   await fileHandle.write(JSON.stringify(selectedTask) +"\n");
+    // }
+    // catch(err)
+    // {
+    //   console.log("Error: ", err);
+    // }
+    // finally
+    // {
+    //   await fileHandle?.close();
+    // }
 
      // Upload to Device
     let urlparams = {
       host: selectedDevice.RemoteAddress, //No need to include 'http://' or 'www.'
-      port: '80', // selectedDevice.RemotePort?? '8080',
-      path: '/configure',
-      method: 'POST',
+      port: selectedDevice.RemotePort?? '80',
+      path: '/interface/task/' + data.TaskID,
+      method: 'GET',
       headers: {
           'Content-Type': 'application/json', //Specifying to the server that we are sending JSON 
       }
@@ -220,12 +223,7 @@ router.post('/sendTask', async (req, res)=> {
 
     try
     {
-      let request = http.request(urlparams, (res)=>{
-        var data = '';
-        console.log('res: ', res);
-      }); //Create a request object.
-
-      request.write(JSON.stringify(selectedTask)); //Send off the request.
+      let request = http.request(urlparams); //Create a request object.
       request.end(); //End the request.
     }
     catch(err)

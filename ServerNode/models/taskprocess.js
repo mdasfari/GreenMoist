@@ -51,6 +51,9 @@ module.exports.normalizeForm = function normalizeForm(bodyForm, taskID) {
     if (bodyForm.ThresholdHigh == '')
         data.ThresholdHigh = null;
 
+    if (bodyForm.ChangeRange == '')
+        data.ChangeRange = null;
+
     if (bodyForm.TrueProcessID == '')
         data.TrueProcessID = null;
     
@@ -142,7 +145,7 @@ module.exports.update = async function update(taskProcess) {
             , BroadcastValue = ?, ThresholdLow = ?, ThresholdHigh = ?, ChangeRange = ?, TrueProcessType = ?, TrueProcessID = ?, TrueDebugMessage = ?
             , FalseProcessType = ?, FalseProcessID = ?, FalseDebugMessage = ?, ActionType = ? where processid = ?`
             , [taskProcess.ProcessSerial, taskProcess.ProcessType, taskProcess.Name, taskProcess.Pin, taskProcess.PinType
-                , taskProcess.SerialOutRawData, taskProcess.BroadcastValue, taskProcess.ThresholdLow, taskProcess.ThresholdHigh. taskProcess.ChangeRange
+                , taskProcess.SerialOutRawData, taskProcess.BroadcastValue, taskProcess.ThresholdLow, taskProcess.ThresholdHigh, taskProcess.ChangeRange
                 , taskProcess.TrueProcessType, taskProcess.TrueProcessID, taskProcess.TrueDebugMessage
                 , taskProcess.FalseProcessType, taskProcess.FalseProcessID, taskProcess.FalseDebugMessage
                 , taskProcess.ActionType, taskProcess.ProcessID]);

@@ -6,6 +6,7 @@ import machine
 import ubinascii
 import bluetooth
 import json
+import math
 from drivers.ble_simple_peripheral import BLESimplePeripheral
 
 class ProcessTypes:
@@ -30,8 +31,10 @@ class ExecutionTypes:
     TurnOn = 1
 
 class ProcessOutcome:
+    PreviousValue = 0
     Value = 0
     ProcessWorkflow = None
+    ProcessSerial = None
     NextProcessSerial = None
     SerialOutRawData = False
     BroadcastValue = False
@@ -41,6 +44,9 @@ class ProcessOutcome:
         self.SerialOutRawData = serialOutRawData
         self.BroadcastValue = broadcastValue
         self.DebugMessage = debugMessage
+        
+    def __str__(self):
+        return f"Process: {self.ProcessSerial} - Value: {self.Value} ({self.PreviousValue}) - Next Process: {self.NextProcessSerial}, Message: {self.DebugMessage}"
 
 # General supporting function
 def getProcessSerial(itm):
@@ -216,6 +222,7 @@ class NodeTask:
     Name = None
     Host = None
     Device = None
+    Active = None    
     Processes = []
     
     def __init__(self, filename, host, device):
@@ -234,6 +241,8 @@ class NodeTask:
             for index in range(len(indexArray)):
                 id = indexArray[index][0]
                 self.Processes.append(TaskProcess(taskData['Processes'][id], self.TaskID, self.Name, self.Host, self.Device))
+                
+            self.Active = True
     
     def __str__(self):
         return f"{self.Name} ({self.TaskID})[{len(self.Processes)}]"
@@ -242,15 +251,18 @@ class NodeTask:
         if len(self.Processes) > 0:
             return 0
         return -1
-        
+
     def getProcessIDByProcessSerial(self, processSerial):
         resultProcess = None
         
-        for index in range(Len(self.Processes)):
+        for index in range(len(self.Processes)):
             if self.Processes[index].ProcessSerial == processSerial:
-                resultProcess = self.Processes[index].ProcessID
+                resultProcess = index
                 break
         return resultProcess
+
+    def setActive(self, state):
+        self.Active = state
     
 class TaskProcess:
     Host = None
@@ -267,6 +279,7 @@ class TaskProcess:
     BroadcastValue = None
     ThresholdLow = None
     ThresholdHigh = None
+    ChangeRange = None
     TrueProcessType = None
     TrueProcessID = None
     TrueDebugMessage = None
@@ -290,6 +303,7 @@ class TaskProcess:
         self.BroadcastValue = process['BroadcastValue']
         self.ThresholdLow = process['ThresholdLow']
         self.ThresholdHigh = process['ThresholdHigh']
+        self.ChangeRange = process['ChangeRange']
         self.TrueProcessType = process['TrueProcessType']
         self.TrueProcessID = process['TrueProcessID']
         self.TrueDebugMessage = process['TrueDebugMessage']
@@ -314,6 +328,7 @@ class TaskProcess:
                 , "BroadcastValue": self.BroadcastValue
                 , "ThresholdLow": self.ThresholdLow
                 , "ThresholdHigh": self.ThresholdHigh
+                , "ChangeRange": self.ChangeRange                    
                 , "TrueProcessType": self.TrueProcessType
                 , "TrueProcessID": self.TrueProcessID
                 , "TrueDebugMessage": self.TrueDebugMessage
@@ -347,6 +362,7 @@ class TaskProcess:
         if not externalOutcome:
             externalOutcome = ProcessOutcome(self.SerialOutRawData, self.BroadcastValue, None)
         
+        externalOutcome.ProcessSerial = self.ProcessSerial
         externalOutcome.SerialOutRawData = self.SerialOutRawData
         externalOutcome.BroadcastValue = self.BroadcastValue
             
@@ -362,6 +378,7 @@ class TaskProcess:
     def runStatusProcess(self, externalOutcome):
         # result.SerialOutRawData = serialOutRawData
         # BroadcastValue
+        externalOutcome.PreviousValue = externalOutcome.Value
         externalOutcome.Value = self.readPinRawValue()
         if externalOutcome.Value >= self.ThresholdLow and externalOutcome.Value <= self.ThresholdHigh:
             externalOutcome.ProcessWorkflow = self.TrueProcessType
@@ -377,29 +394,34 @@ class TaskProcess:
     def runActionProcess(self, externalOutcome):
         # in this procedure and according to the data saved
         # the function will execute based on the process type
+        externalOutcome.PreviousValue = externalOutcome.Value
         if self.ActionType:
             externalOutcome.Value = 1
         else:
             externalOutcome.Value = 0
-            
-        self.activePin.value(externalOutcome.Value)
+        
+        if self.readPinRawValue() != externalOutcome.Value:
+            print("Button switched")
+            self.activePin.value(externalOutcome.Value)
+        
         externalOutcome.ProcessWorkflow = self.TrueProcessType
         externalOutcome.NextProcessSerial = self.TrueProcessID
         externalOutcome.DebugMessage = self.TrueDebugMessage
 
     def runNotificationProcess(self, externalOutcome):
-        data = {"DeviceID": self.Device.DeviceID
-                , "ProcessID": self.ProcessID
-                , "ProcessType": self.ProcessType
-                , "Pin": self.Pin
-                , "PinType": self.PinType
-                , "DebugMessage": self.TrueDebugMessage
-                , "Value": externalOutcome.Value
-                , "ThresholdLow": self.ThresholdLow
-                , "ThresholdHigh": self.ThresholdHigh}
-        
-        if (self.BroadcastValue):
-            print(executeUrl(f"http://{self.Host}/interface/record", "POST", json.dumps(data)))
-        
+        if self.ChangeRange and (math.fabs(externalOutcome.Value - externalOutcome.PreviousValue) >= self.ChangeRange):
+            data = {"DeviceID": self.Device.DeviceID
+                    , "ProcessID": self.ProcessID
+                    , "ProcessType": self.ProcessType
+                    , "Pin": self.Pin
+                    , "PinType": self.PinType
+                    , "DebugMessage": self.TrueDebugMessage
+                    , "Value": externalOutcome.Value
+                    , "ThresholdLow": self.ThresholdLow
+                    , "ThresholdHigh": self.ThresholdHigh}
+            
+            if (self.BroadcastValue):
+                print(executeUrl(f"http://{self.Host}/interface/record", "POST", json.dumps(data)))
+                
         return externalOutcome
     

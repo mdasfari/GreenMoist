@@ -4,7 +4,7 @@ import bluetooth
 import random
 import struct
 import time
-from drivers.ble_advertising import advertising_payload
+from ble_advertising import advertising_payload
 
 from micropython import const
 
