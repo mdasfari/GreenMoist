@@ -1,0 +1,52 @@
+
+> ble@1.0.0 start
+> node index.js
+
+Hello World!!! - application start here
+scanning...
+ed:f0:b0:75:54:56 (undefined)
+41:b2:19:38:35:b4 (undefined)
+4f:90:20:07:6b:af (undefined)
+48:6d:94:90:b0:08 (undefined)
+25:07:b8:7a:f4:c0 (undefined)
+43:5f:82:31:bf:a2 (undefined)
+09:81:af:de:a0:64 (undefined)
+02:78:9a:3e:c4:f3 (undefined)
+61:c2:66:2d:0e:9f (undefined)
+4d:cd:e0:85:53:63 (undefined)
+5f:83:34:1b:d7:e2 (undefined)
+22:37:13:56:73:41 (undefined)
+74:ab:af:44:0e:78 (undefined)
+28:cd:c1:07:1d:9a (undefined)
+34:70:e6:bb:cd:e4 (undefined)
+e9:53:22:2a:72:4f (undefined)
+77:75:48:e2:ab:11 (undefined)
+ed:7a:4c:f9:7e:1e (undefined)
+c7:be:5e:43:b3:c2 (undefined)
+cc:91:ea:0c:06:2e (undefined)
+d6:9d:11:10:37:3a (undefined)
+dd:54:39:a6:52:4c (undefined)
+e3:7f:95:06:f4:df (undefined)
+4f:36:fe:5c:94:a8 (undefined)
+5b:2e:d9:53:6f:7f (undefined)
+65:22:08:c1:56:a4 (undefined)
+63:03:51:de:57:47 (undefined)
+18:9a:9a:3a:5c:83 (undefined)
+6b:7b:3d:cb:3c:ad (undefined)
+3e:af:12:5c:23:d8 (undefined)
+d0:4d:12:77:49:f9 (undefined)
+41:b2:19:38:35:b4 (undefined)
+ed:f0:b0:75:54:56 (undefined)
+25:07:b8:7a:f4:c0 (undefined)
+48:6d:94:90:b0:08 (undefined)
+43:5f:82:31:bf:a2 (undefined)
+02:78:9a:3e:c4:f3 (undefined)
+22:37:13:56:73:41 (undefined)
+34:70:e6:bb:cd:e4 (undefined)
+68:10:2e:da:13:9c (LE_WI-C100)
+
+> ble@1.0.0 start
+> node index.js
+
+Hello World!!! - application start here
+scanning...

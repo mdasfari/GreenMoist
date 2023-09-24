@@ -106,6 +106,14 @@ def executeUrl(url, webMethod, dataInput = None):
 
     return data_parts #(status, result)
 
+class WirelessNetwork:
+    SSID: None
+    PWD: None
+    
+    def __init(self, ssid, pwd):
+        self.SSID = ssid
+        self.PWD = pwd
+
 class Device:
     DeviceID: None
     Name: None
@@ -205,13 +213,12 @@ class AppConfiguration:
             print("Data received: ", data)  # Print the received data
             if data == b'IDENTIFY':  # Check if the received data is "toggle"
                 self.BleQueue.append(getBoardSerialNumber())
-            if data == b'ACKNOWLEDGE':  
-                self.BleQueue.append("CREDENTIAL")
             if data[:5] == b'INET:':
-                self.Host = Host(data[:5].split("PWD:")[0], data[:5].split("PWD:")[1])
-                self.BleQueue.append("ONBOARD")
-            if data == b'AUTHORIZED':  
-                self.BleQueue.append("CREDENTIAL")
+                newAppConfig = json.loads(str(data[5:], 'utf-8'))
+                self.Version = newAppConfig.Version
+                self.Device = Device(newAppConfig.DeviceID, newAppConfig.Name)
+                self.Host = Host(newAppConfig.Host, newAppConfig.Port)
+                self.Network = [WirelessNetwork(newAppConfig.SSID, newAppConfig.PWD)]
                 
         # Start an infinite loop
         if sp.is_connected():  # Check if a BLE connection is established

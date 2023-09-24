@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const navMenu = require('../routes/_navigation');
-const dataModel = require('../models/taskProcess');
+const dataModel = require('../models/taskprocess');
 
 // Validator
 const {body , validationResult } = require('express-validator');

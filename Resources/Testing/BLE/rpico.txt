@@ -1,0 +1,100 @@
+28:cd:c1:07:1d:9a (undefined)
+<ref *1> Peripheral {
+  _noble: Noble {
+    initialized: true,
+    address: 'dc:a6:32:c7:7e:c3',
+    _state: 'poweredOn',
+    _bindings: NobleBindings {
+      _state: 'poweredOn',
+      _addresses: [Object],
+      _addresseTypes: [Object],
+      _connectable: [Object],
+      _isExtended: false,
+      scannable: [Object],
+      _pendingConnectionUuid: null,
+      _connectionQueue: [],
+      _handles: {},
+      _gatts: {},
+      _aclStreams: {},
+      _signalings: {},
+      _hci: [Hci],
+      _gap: [Gap],
+      _events: [Object: null prototype],
+      _eventsCount: 25,
+      onSigIntBinded: [Function: bound ],
+      _scanServiceUuids: []
+    },
+    _peripherals: {
+      '32353c55b04b': [Peripheral],
+      '4b5ea3653617': [Peripheral],
+      '1707e29a570e': [Peripheral],
+      '77541950e1d2': [Peripheral],
+      '01250be0afe5': [Peripheral],
+      '1609a8badd41': [Peripheral],
+      '28cdc1071d9a': [Circular *1]
+    },
+    _services: {
+      '32353c55b04b': {},
+      '4b5ea3653617': {},
+      '1707e29a570e': {},
+      '77541950e1d2': {},
+      '01250be0afe5': {},
+      '1609a8badd41': {},
+      '28cdc1071d9a': {}
+    },
+    _characteristics: {
+      '32353c55b04b': {},
+      '4b5ea3653617': {},
+      '1707e29a570e': {},
+      '77541950e1d2': {},
+      '01250be0afe5': {},
+      '1609a8badd41': {},
+      '28cdc1071d9a': {}
+    },
+    _descriptors: {
+      '32353c55b04b': {},
+      '4b5ea3653617': {},
+      '1707e29a570e': {},
+      '77541950e1d2': {},
+      '01250be0afe5': {},
+      '1609a8badd41': {},
+      '28cdc1071d9a': {}
+    },
+    _discoveredPeripheralUUids: {
+      '32353c55b04b': true,
+      '4b5ea3653617': true,
+      '1707e29a570e': true,
+      '77541950e1d2': true,
+      '01250be0afe5': true,
+      '1609a8badd41': true,
+      '28cdc1071d9a': true
+    },
+    _events: [Object: null prototype] {
+      warning: [Function (anonymous)],
+      newListener: [Function (anonymous)],
+      stateChange: [AsyncFunction (anonymous)],
+      discover: [AsyncFunction (anonymous)]
+    },
+    _eventsCount: 4,
+    _allowDuplicates: undefined
+  },
+  id: '28cdc1071d9a',
+  uuid: '28cdc1071d9a',
+  address: '28:cd:c1:07:1d:9a',
+  addressType: 'public',
+  connectable: true,
+  scannable: false,
+  advertisement: {
+    localName: undefined,
+    txPowerLevel: undefined,
+    manufacturerData: undefined,
+    serviceData: [],
+    serviceUuids: [],
+    solicitationServiceUuids: [],
+    serviceSolicitationUuids: []
+  },
+  rssi: -36,
+  services: null,
+  mtu: null,
+  state: 'disconnected'
+}

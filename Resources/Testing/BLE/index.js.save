@@ -1,0 +1,26 @@
+const noble = require('@abandonware/noble');
+
+console.log("Hello World!!! - application start here");
+
+noble.on('stateChange', async (state)=> {
+  if (state === 'poweredOn') {
+    //
+    // Once the BLE radio has been powered on, it is possible
+    // to begin scanning for services. Pass an empty array to
+    // scan for all services (uses more time and power).
+    //
+    console.log('scanning...');
+    await noble.startScanningAsync(); //[pizzaServiceUuid], false);
+  }
+  else {
+    noble.stopScanning();
+  }
+})
+
+noble.on('discover', async (peripheral)=> {
+	if(peripheral.address == '
+  console.log(`${peripheral.address} (${peripheral.advertisement.localName})`);
+})
+
+
+'
