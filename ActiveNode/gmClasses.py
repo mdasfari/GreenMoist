@@ -57,7 +57,7 @@ def getProcessSerial(itm):
 def getBoardSerialNumber():
     return ubinascii.hexlify(machine.unique_id()).upper().decode('utf-8')
 
-def executeUrl(url, webMethod, dataInput = None):
+def executeUrl(remoteConnection, url, webMethod, dataInput = None):
     lineBreak = '\r\n'
     charset = 'utf-8'
     _,_,host,path = url.split('/', 3)
@@ -66,11 +66,19 @@ def executeUrl(url, webMethod, dataInput = None):
     server = host_part[0]
     port = int(host_part[1])
     
-    addressInfo = socket.getaddrinfo(server, port)
-    sock = socket.socket()
-
-    sock.connect(addressInfo[0][-1])
+    print(f"Connecting to {url}")
     
+    # addressInfo = socket.getaddrinfo(server, port)
+    # sendSock = socket.socket()
+
+    # print(f"Connection Address {addressInfo[0][-1]}")
+
+    try:
+        # sendSock.connect(addressInfo[0][-1])
+        print(f"Connected")
+    except Exception as err:
+        print(err)
+        return None
     request = ""
     requestParts = []
     requestParts.append(f'{webMethod} /{path} HTTP/1.0')
@@ -88,22 +96,20 @@ def executeUrl(url, webMethod, dataInput = None):
     request = request + lineBreak    
     
     httpCommand = bytes(request, charset)
-    sock.write(httpCommand)
+    remoteConnection.write(httpCommand)
 
     data = ''
     chunk = 0
     while True:
-        packet = sock.recv(1024).decode()
+        packet = remoteConnection.recv(1024).decode()
         if packet:
             data = data + str(packet, charset)
             chunk = chunk + 1
         else:
             break
     
-    sock.close()
-    
+    # sendSock.close()
     data_parts = data.split(lineBreak)
-
     return data_parts #(status, result)
 
 class WirelessNetwork:
@@ -427,7 +433,8 @@ class TaskProcess:
                 , "ThresholdHigh": self.ThresholdHigh}
         
         if (self.BroadcastValue):
-            print(executeUrl(f"http://{self.Host}/interface/record", "POST", json.dumps(data)))
+            # responseData = executeUrl(remoteServerConnection, f"http://{self.Host}/interface/record", "POST", json.dumps(data))
+            print("Data sent to server")
                 
         return externalOutcome
     
