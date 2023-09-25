@@ -1,3 +1,4 @@
+# Version 1.61
 import gmClasses as gmc
 import machine
 import socket
@@ -24,10 +25,13 @@ appConfig = gmc.AppConfiguration(filename)
 while not appConfig.readConfigurationFile():
     # the configuration file is missing,
     # run BLE to connect to the server
+    print("Configuration File is missing, run BLE advertisment")
     appConfig.ble_BroadcastDevice()
 
+print("configuration loaded")
 (nc,err) = appConfig.connect(0, 3)
-
+if (err):
+    print("error: ", err, " Type: ", type(err))
 if nc.status() != 3:
     raise RuntimeError('network connection failed')
 else:
@@ -144,19 +148,32 @@ def StartWebServer():
             cl, addr = sock.accept()
             request = cl.recv(1024).decode()
             queryString = request.split('\r\n')[0].split(" ")
-            newRequest = f'http://{appConfig.Host}{queryString[1]}'
-            
-            print(f"new Request: {newRequest}")
 
-            tsk.setActive(False)
+            # check what command?
+            restartBoard = False
+            requestParts = queryString[1].split("/")
+            if requestParts[2] == "task":
+                newRequest = f'http://{appConfig.Host}{queryString[1]}'
+                print(f"new Request: {newRequest}")
+                tsk.setActive(False)
+                if downloadNewTask(newRequest):
+                    print("Task accepted")
+                    restartBoard = True
+                cl.send(f'{queryString[2]} 201 OK\r\nContent-type: text/html\r\n\r\n')
+            elif requestParts[2] == "update":
+                appConfig.resetUpdateflag(True)
+                cl.send(f'{queryString[2]} 201 OK\r\nContent-type: text/html\r\n\r\n')
+                restartBoard = True
+            else:
+                cl.send(f'{queryString[2]} 405 OK\r\nContent-type: text/html\r\n\r\n')
 
-            if downloadNewTask(newRequest):
-                cl.send(f'{queryString[2]} 200 OK\r\nContent-type: text/html\r\n\r\n')
-                time.sleep(1)
-                cl.close()
-                time.sleep(5)
+            time.sleep(1)
+            cl.close()
+
+            if restartBoard:
+                time.sleep(2)
                 machine.reset()
-            
+
         except OSError as e:
             print(f"{e} - Type: {typeof(e)}")
             print('connection closed')

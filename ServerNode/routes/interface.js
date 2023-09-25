@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const fs = require("fs/promises");
 const deviceRecord = require('../models/devicerecord');
 const task = require('../models/task');
 const taskprocess = require('../models/taskprocess');
@@ -58,6 +59,37 @@ router.post('/record', async (request, response)=>{
   {
     console.log(ex)
     return response.status(415).json(ex);
+  }
+});
+
+router.get('/firmware/:id', async (request, response)=>{
+  let filename = "./ActiveNode/";
+  if (request.params.id == "gmClasses")
+  {
+    filename += "gmClasses.py";
+  }
+  else if (request.params.id == "activenode")
+  {
+    filename += "activenode.py";
+  }
+  else
+  {
+    response.sendStatus(404);
+  }
+
+  let fileHandle;
+
+  try
+  {
+    fileHandle = await fs.open(filename, 'r');
+    let fileContent = await fileHandle.readFile();
+    fileHandle.close();
+
+    response.status(200).send(fileContent);
+  }
+  catch (err)
+  {
+    console.log(err);
   }
 });
 

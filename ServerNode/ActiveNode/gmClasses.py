@@ -1,3 +1,4 @@
+# Version 1.62
 import network
 import socket
 import time
@@ -57,7 +58,14 @@ def getProcessSerial(itm):
 def getBoardSerialNumber():
     return ubinascii.hexlify(machine.unique_id()).upper().decode('utf-8')
 
-def executeUrl(remoteConnection, url, webMethod, dataInput = None):
+def getTheDataSize(responseData):
+    start = responseData.find("Content-Length")
+    end = responseData.find("\r\n", start) + 2
+    responseElement = responseData[start:end].split(":")
+    contentSize = int(responseElement[1])
+    return contentSize
+
+def executeUrl(url, webMethod, dataInput = None):
     lineBreak = '\r\n'
     charset = 'utf-8'
     _,_,host,path = url.split('/', 3)
@@ -68,17 +76,18 @@ def executeUrl(remoteConnection, url, webMethod, dataInput = None):
     
     print(f"Connecting to {url}")
     
-    # addressInfo = socket.getaddrinfo(server, port)
-    # sendSock = socket.socket()
+    addressInfo = socket.getaddrinfo(server, port)
+    sendSock = socket.socket()
 
-    # print(f"Connection Address {addressInfo[0][-1]}")
+    print(f"Connection Address {addressInfo[0][-1]}")
 
     try:
-        # sendSock.connect(addressInfo[0][-1])
+        sendSock.connect(addressInfo[0][-1])
         print(f"Connected")
     except Exception as err:
-        print(err)
+        print("error: ", err, " Type: ", type(err))
         return None
+    
     request = ""
     requestParts = []
     requestParts.append(f'{webMethod} /{path} HTTP/1.0')
@@ -96,20 +105,23 @@ def executeUrl(remoteConnection, url, webMethod, dataInput = None):
     request = request + lineBreak    
     
     httpCommand = bytes(request, charset)
-    remoteConnection.write(httpCommand)
+    sendSock.write(httpCommand)
 
     data = ''
     chunk = 0
     while True:
-        packet = remoteConnection.recv(1024).decode()
+        packet = sendSock.recv(1024).decode()
         if packet:
             data = data + str(packet, charset)
             chunk = chunk + 1
         else:
             break
     
-    # sendSock.close()
-    data_parts = data.split(lineBreak)
+    sendSock.close()
+    dataSize = len(data) - getTheDataSize(data)
+    data_parts = data[:dataSize-2].split(lineBreak)
+    data_parts.append(data[dataSize:])
+
     return data_parts #(status, result)
 
 class WirelessNetwork:
@@ -153,6 +165,10 @@ class AppConfiguration:
     def __init__(self, AppConfigFile):
         self.ConfigFilename = AppConfigFile
     
+    def resetUpdateflag(self, status):
+        self.OSUpdate = status
+        self.writeConfiguration()
+    
     def readConfigurationFile(self):
         returnResult = False
         try:
@@ -160,7 +176,7 @@ class AppConfiguration:
                 appData = json.loads(configFile.read())
                 self.Version = appData['Version']
                 self.OSUpdate = appData['OSUpdate']
-                self.Device = Device(appData['DeviceID'], appData['Name'])
+                self.Device = Device(appData['Device']['DeviceID'], appData['Device']['Name'])
                 self.Host = Host(appData['Host']['Hostname'], appData['Host']['Port'])
                 self.Network = appData['Network']
                 returnResult = True
@@ -174,7 +190,12 @@ class AppConfiguration:
         returnResult = False
         try:
             with open(self.ConfigFilename, "w") as configFile:
-                configFile.write(self)
+                configData = json.dumps({"Version": self.Version
+                              , "Device": {"DeviceID": self.Device.DeviceID, "Name": self.Device.Name}
+                              , "Host": {"Hostname": self.Host.Hostname, "Port": self.Host.Port}
+                              , "Network":self.Network
+                              , "OSUpdate": self.OSUpdate})
+                configFile.write(configData)
                 returnResult = True
         except Exception as err:
             print("error: ", err, " Type: ", type(err))
@@ -197,8 +218,8 @@ class AppConfiguration:
             print('waiting for connection...')
             time.sleep(1)
             
-        except Exception:
-            Err = Exception
+        except Exception as ex:
+            Err = ex
         finally:
             return (wlan, Err)
         
@@ -221,10 +242,11 @@ class AppConfiguration:
                 self.BleQueue.append(getBoardSerialNumber())
             if data[:5] == b'INET:':
                 newAppConfig = json.loads(str(data[5:], 'utf-8'))
-                self.Version = newAppConfig.Version
-                self.Device = Device(newAppConfig.DeviceID, newAppConfig.Name)
-                self.Host = Host(newAppConfig.Host, newAppConfig.Port)
-                self.Network = [WirelessNetwork(newAppConfig.SSID, newAppConfig.PWD)]
+                self.Version = newAppConfig['Version']
+                self.OSUpdate = newAppConfig['OSUpdate']
+                self.Device = Device(newAppConfig['Device']['DeviceID'], newAppConfig['Device']['Name'])
+                self.Host = Host(newAppConfig['Host']['Hostname'], newAppConfig['Host']['Port'])
+                self.Network = newAppConfig['Network']
                 
         # Start an infinite loop
         if sp.is_connected():  # Check if a BLE connection is established
