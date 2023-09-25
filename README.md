@@ -14,7 +14,7 @@ Traditionally, Irrigation taken by farmer manually and it is a timely operation 
 
 ## Getting Started
 
-You need to install all [prerequisites](#prerequisites) to run the system.
+You need to install all [prerequisites](#prerequisites) to running the system.
 
 ***Warning*** it is important to create database objects before run the system.
 
@@ -118,7 +118,7 @@ CREATE TABLE `devicerecords` (
 
 **Server Node**
 
-go to root folder of your choise,
+go to root folder of your choice,
 
 ```
 git clone https://github.com/mdasfari/GreenMoist.git
@@ -142,9 +142,9 @@ and create and copy *app.cfg* to Pico too as the following:
   , "Device": {"DeviceID": **DeviceID from database**, "Name": "**anything at the moment**"}}
 ```
 
-When the Pico run it will send a request to the server to download all files
+When the Pico run it will send a request to the server to download all files.
 
-Once finished, and after creating Task from the ServerNode, go to Devices and select the device then select the desired task and send the update. Pico will update and restart and will follow your Task
+Once finished, and after creating Task from the ServerNode, go to Devices and select the device then select the desired task and send the update. Pico will update and restart and will follow your Task.
 
 ### Author
 

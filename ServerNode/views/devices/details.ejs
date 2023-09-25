@@ -15,8 +15,16 @@
                 <!-- Task -->
                 <h3>Information</h3>
                 <div class="form-container">
-                    <label for="Name" class="form-label">Name</label>
-                    <input type="text" class="form-control" value="<%=model.Name%>" readonly />
+                    <div class="row align-items-end">
+                        <div class="col-md-10">
+                            <label for="Name" class="form-label">Name</label>
+                            <input type="text" class="form-control" value="<%=model.Name%>" readonly />
+                        </div>
+                        <div class="col-md-2 align-self-end">
+                            <a class="btn btn-success" target="_blank" href="http://<%=model.RemoteAddress%>:<%=model.RemotePort%>/interface/update">Update Software</a>
+                        </div>
+                    </div>
+                    
                     <div class="row mt-2">
                         <div class="col-md-10">
                             <label for="RemoteAddress" class="form-label">Remote Address</label>
